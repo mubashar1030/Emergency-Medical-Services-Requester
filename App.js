@@ -13,7 +13,7 @@ const Stack = createStackNavigator();
 
 const getFont = () =>
   Font.loadAsync({
-    Helvetica: require("./assets/fonts/SundayMorning.otf"),
+    Helvetica: require("./assets/fonts/Helvetica.ttf"),
   });
 
 export default function App() {
@@ -25,16 +25,16 @@ export default function App() {
   if (fontsLoaded) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName="UserTypeScreen">
           <Stack.Screen
-            name="Home"
+            name="UserTypeScreen"
             component={UserTypeScreen}
             options={{
               title: "User Type",
               headerStyle: {
                 backgroundColor: Colors.primary,
               },
-              headerTitleAlign: 'center',
+              headerTitleAlign: "center",
               headerTitleStyle: {
                 fontWeight: "bold",
                 fontSize: 22,
@@ -42,7 +42,22 @@ export default function App() {
               },
             }}
           />
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen
+            name='LoginScreen'
+            component={LoginScreen}
+            options={{
+              title: 'Login',
+              headerStyle: {
+                backgroundColor: Colors.primary,
+              },
+              headerTitleAlign: "center",
+              headerTitleStyle: {
+                fontWeight: "bold",
+                fontSize: 22,
+                color: Colors.tertiary,
+              },
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     );
