@@ -7,6 +7,7 @@ import Colors from "./constants/colors.js";
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
 import UserTypeScreen from "./screens/UserTypeScreen.js";
+import LoginScreen from "./screens/LoginScreen.js";
 
 const Stack = createStackNavigator();
 
@@ -24,7 +25,7 @@ export default function App() {
   if (fontsLoaded) {
     return (
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen
             name="Home"
             component={UserTypeScreen}
@@ -33,7 +34,7 @@ export default function App() {
               headerStyle: {
                 backgroundColor: Colors.primary,
               },
-              // headerTitleAlign: 'center',
+              headerTitleAlign: 'center',
               headerTitleStyle: {
                 fontWeight: "bold",
                 fontSize: 22,
@@ -41,6 +42,7 @@ export default function App() {
               },
             }}
           />
+          <Stack.Screen name="Login" component={LoginScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );
