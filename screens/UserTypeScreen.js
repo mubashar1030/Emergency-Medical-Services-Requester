@@ -4,8 +4,11 @@ import Colors from "../constants/colors.js";
 import CustomButton from "../components/CustomButton";
 
 const UserTypeScreen = ({ navigation }) => {
-  const onButtonPress = (userType) => {
-    console.log(userType);
+  const onButtonPress = (user) => {
+    console.log(user);
+    navigation.navigate('LoginScreen',{
+      userType: user
+    });
   };
 
   return (
