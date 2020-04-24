@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableOpacity,
   Image,
   TextInput,
@@ -11,7 +10,6 @@ import {
   Alert,
 } from "react-native";
 import Colors from "../constants/colors.js";
-import CustomButton from "../components/CustomButton";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -21,24 +19,38 @@ const LoginScreen = ({ route, navigation }) => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Signup button should only be displayed if user is Requester.
+  // The below condition makes sure of it.
+
   const onSigninPressHandler = () => {
-      console.log('User Type: '+ route.params.userType)
+    console.log("User Type: " + route.params.userType);
     console.log("email: " + email);
     console.log("Password: " + password);
-    if (email!=='cs360' || password!=='cs360'){
-        Alert.alert(
-            "Login Error",
-            "Incorrect Username and/or Password",
-            [
-              {
-                text: "Try Again!",
-                // onPress: () => console.log("Cancel Pressed"),
-                style: "cancel"
-              },
-            ]
-          );
+    if (email !== "cs360" || password !== "cs360") {
+      Alert.alert("Login Error", "Incorrect Username and/or Password", [
+        {
+          text: "Try Again!",
+          style: "cancel",
+        },
+      ]);
     }
   };
+
+  const onSignupPressHandler = () => {
+    console.log("Sign up Button is Pressed.");
+  };
+
+  let signupButton;
+  if (route.params.userType === "Requester") {
+    signupButton = (
+      <TouchableOpacity
+        style={{ alignItems: "center" }}
+        onPress={onSignupPressHandler}
+      >
+        <Text style={styles.signupText}>Sign Up</Text>
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -49,14 +61,14 @@ const LoginScreen = ({ route, navigation }) => {
             <TextInput
               placeholder="Email"
               onChangeText={(text) => setemail(text)}
-              autoCapitalize='none'
+              autoCapitalize="none"
             />
           </View>
           <View style={styles.inputContainer}>
             <TextInput
               placeholder="Password"
               onChangeText={(text) => setPassword(text)}
-              autoCapitalize='none'
+              autoCapitalize="none"
             />
           </View>
         </View>
@@ -68,9 +80,7 @@ const LoginScreen = ({ route, navigation }) => {
             <Text style={styles.text}>Sign In</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={{ alignItems: "center" }}>
-          <Text style={styles.signupText}>Sign Up</Text>
-        </TouchableOpacity>
+        {signupButton}
       </View>
     </ScrollView>
   );
