@@ -17,6 +17,7 @@ import {
 } from "react-native-responsive-screen";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import GenerateRequestScreen from './GenerateRequestScreen';
 
 const RequesterScreen = ({ route, navigation }) => {
 
@@ -44,7 +45,7 @@ const RequesterScreen = ({ route, navigation }) => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === "Home") {
+          if (route.name === "GenerateRequest") {
             return (
               <Entypo
                 name="plus"
@@ -72,7 +73,7 @@ const RequesterScreen = ({ route, navigation }) => {
         activeBackgroundColor: Colors.selected,
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="GenerateRequest" component={GenerateRequestScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
