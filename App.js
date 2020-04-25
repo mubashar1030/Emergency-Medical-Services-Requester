@@ -8,6 +8,7 @@ import * as Font from "expo-font";
 import { AppLoading } from "expo";
 import UserTypeScreen from "./screens/UserTypeScreen.js";
 import LoginScreen from "./screens/LoginScreen.js";
+import RequesterScreen from "./screens/RequesterScreen.js";
 
 const Stack = createStackNavigator();
 
@@ -25,7 +26,7 @@ export default function App() {
   if (fontsLoaded) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="UserTypeScreen">
+        <Stack.Navigator initialRouteName="RequesterScreen">
           <Stack.Screen
             name="UserTypeScreen"
             component={UserTypeScreen}
@@ -43,10 +44,26 @@ export default function App() {
             }}
           />
           <Stack.Screen
-            name='LoginScreen'
+            name="LoginScreen"
             component={LoginScreen}
             options={{
-              title: 'Login',
+              title: "Login",
+              headerStyle: {
+                backgroundColor: Colors.primary,
+              },
+              headerTitleAlign: "center",
+              headerTitleStyle: {
+                fontWeight: "bold",
+                fontSize: 22,
+                color: Colors.tertiary,
+              },
+            }}
+          />
+          <Stack.Screen
+            name="RequesterScreen"
+            component={RequesterScreen}
+            options={{
+              title: "EMS-R",
               headerStyle: {
                 backgroundColor: Colors.primary,
               },
