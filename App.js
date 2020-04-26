@@ -26,7 +26,7 @@ export default function App() {
   if (fontsLoaded) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="RequesterScreen">
+        <Stack.Navigator initialRouteName="UserTypeScreen">
           <Stack.Screen
             name="UserTypeScreen"
             component={UserTypeScreen}
