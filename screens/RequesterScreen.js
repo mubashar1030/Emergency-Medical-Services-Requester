@@ -18,6 +18,7 @@ import {
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import GenerateRequestScreen from './GenerateRequestScreen';
+import SettingsScreen from './SettingsScreen'
 
 const RequesterScreen = ({ route, navigation }) => {
 
@@ -29,13 +30,13 @@ const RequesterScreen = ({ route, navigation }) => {
     );
   }
 
-  function SettingsScreen() {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Settings!</Text>
-      </View>
-    );
-  }
+  // function SettingsScreen() {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+  //       <Text>Settings!</Text>
+  //     </View>
+  //   );
+  // }
 
   const Tab = createBottomTabNavigator();
 
