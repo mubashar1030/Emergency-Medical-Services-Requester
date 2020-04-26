@@ -23,6 +23,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import MyButton from "../components/MyButton";
+import Photo from '../components/Photo'
 import * as Progress from "react-native-progress";
 import call from "react-native-phone-call";
 
@@ -190,12 +191,13 @@ const GenerateRequestScreen = () => {
     } else {
       content = (
         <View style={styles.container}>
-          <View style={styles.photoContainer}>
+          {/* <View style={styles.photoContainer}>
             <Image
               source={require("../assets/dummy.png")}
               style={styles.photo}
             />
-          </View>
+          </View> */}
+          <Photo photo={require("../assets/dummy.png")} photoContainerStyle={{marginTop: heightPercentageToDP("15%")}}/>
           <View
             style={{
               ...styles.waitingTextContainer,
@@ -323,6 +325,8 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: Colors.tertiary,
     overflow: "hidden",
+    borderWidth: widthPercentageToDP('1%'),
+    borderColor: Colors.tertiary
   },
   photo: {
     width: widthPercentageToDP("50%"),
