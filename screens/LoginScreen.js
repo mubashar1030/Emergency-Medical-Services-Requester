@@ -34,6 +34,9 @@ const LoginScreen = ({ route, navigation }) => {
         },
       ]);
     }
+    if (route.params.userType=='Requester'){
+      navigation.navigate('RequesterScreen');
+    }
   };
 
   const onSignupPressHandler = () => {
