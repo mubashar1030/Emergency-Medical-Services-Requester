@@ -8,6 +8,7 @@ import * as Font from "expo-font";
 import { AppLoading } from "expo";
 import UserTypeScreen from "./screens/UserTypeScreen.js";
 import LoginScreen from "./screens/LoginScreen.js";
+import SignupScreen from './screens/SignupScreen'
 import RequesterScreen from "./screens/RequesterScreen.js";
 import EMSMemberScreen from './screens/EMSMemberScreen'
 import AdministratorScreen from './screens/AdministratorScreen'
@@ -98,6 +99,22 @@ export default function App() {
             component={AdministratorScreen}
             options={{
               title: "EMS-R",
+              headerStyle: {
+                backgroundColor: Colors.primary,
+              },
+              headerTitleAlign: "center",
+              headerTitleStyle: {
+                fontWeight: "bold",
+                fontSize: 22,
+                color: Colors.tertiary,
+              },
+            }}
+          />
+          <Stack.Screen
+            name="SignupScreen"
+            component={SignupScreen}
+            options={{
+              title: "Sign Up",
               headerStyle: {
                 backgroundColor: Colors.primary,
               },
