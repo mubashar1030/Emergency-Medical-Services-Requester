@@ -10,8 +10,8 @@ import Colors from "../constants/colors.js";
 const InfoText = (props) => {
   return (
     <View style={{...styles.info ,borderBottomWidth: props.border}}>
-      <Text style={styles.label}>{props.label} </Text>
-      <Text style={styles.infoText}>{props.text}</Text>
+      <Text style={{...styles.label, fontSize: props.fontSize, width: props.labelWidth}}>{props.label} </Text>
+      <Text style={{...styles.infoText, fontSize: props.fontSize,}}>{props.text}</Text>
     </View>
   );
 };
