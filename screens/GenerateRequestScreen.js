@@ -197,7 +197,7 @@ const GenerateRequestScreen = () => {
               style={styles.photo}
             />
           </View> */}
-          <Photo photo={require("../assets/dummy.png")} photoContainerStyle={{marginTop: heightPercentageToDP("15%")}}/>
+          <Photo photo={require("../assets/dummy.png")} photoContainerStyle={{marginTop: '20%'}}/>
           <View
             style={{
               ...styles.waitingTextContainer,
@@ -259,12 +259,12 @@ const styles = StyleSheet.create({
   },
   map: {
     width: widthPercentageToDP("90%"),
-    height: heightPercentageToDP("80%"),
+    height: heightPercentageToDP("60%"),
     borderRadius: widthPercentageToDP("7%"),
   },
   buttonContainer: {
-    position: "absolute",
-    marginTop: heightPercentageToDP("80%"),
+    // position: "absolute",
+    marginTop: '10%',//heightPercentageToDP("80%"),
   },
   button: {
     width: widthPercentageToDP("70%"),
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: widthPercentageToDP("90%"),
-    height: heightPercentageToDP("60%"),
+    height: '65%',//heightPercentageToDP("60%"),
     backgroundColor: Colors.tertiary,
     borderRadius: widthPercentageToDP("7%"),
     elevation: 4,
@@ -369,9 +369,10 @@ const styles = StyleSheet.create({
     color: Colors.secondary,
   },
   endButtonContainer: {
-    position: "absolute",
+    // position: "absolute",
     width: widthPercentageToDP("100%"),
     height: heightPercentageToDP("6%"),
+    marginTop: '5%'
   },
   endButton: {
     // position: 'absolute',
@@ -382,7 +383,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: widthPercentageToDP("5%"),
-    marginTop: heightPercentageToDP("82%"),
+    // marginTop: '5%',//heightPercentageToDP("82%"),
     marginLeft: widthPercentageToDP("70%"),
   },
   endButtonText: {

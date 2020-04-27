@@ -53,7 +53,7 @@ const AcceptRequestScreen = () => {
   } else if (isMemberSelected) {
     content = (
       <View style={styles.container}>
-        <Photo photo={memberSelected.photo} photoContainerStyle={{marginTop: heightPercentageToDP("15%")}}/>
+        <Photo photo={memberSelected.photo} photoContainerStyle={{marginTop: '20%'}}/>
         <View style={styles.memberInformationContainer}>
 
         </View>

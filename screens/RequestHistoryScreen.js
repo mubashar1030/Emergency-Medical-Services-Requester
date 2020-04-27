@@ -135,18 +135,8 @@ const AcceptRequestScreen = () => {
               >
                 Emergency Details:
               </Text>
-              <ScrollView
-                style={{
-                  ...styles.emergencyDetails,
-                  height: heightPercentageToDP("17%"),
-                }}
-              >
-                <Text
-                  style={{
-                    ...styles.infoText,
-                    fontSize: widthPercentageToDP("4%"),
-                  }}
-                >
+              <ScrollView style={styles.emergencyDetails}>
+                <Text style={styles.infoText}>
                   {requestSelected.emergencyDetails}
                 </Text>
               </ScrollView>
@@ -217,12 +207,12 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: Colors.tertiary,
     width: widthPercentageToDP("80%"),
-    height: heightPercentageToDP("70%"),
+    height: "70%", //heightPercentageToDP("70%"),
     marginTop: heightPercentageToDP("5%"),
     borderRadius: widthPercentageToDP("7%"),
     paddingVertical: heightPercentageToDP("3%"),
     justifyContent: "space-evenly",
-    alignItems: 'center'
+    alignItems: "center",
   },
   requestDetails: {
     width: widthPercentageToDP("77%"),
@@ -233,27 +223,26 @@ const styles = StyleSheet.create({
     fontSize: widthPercentageToDP("5%"),
     color: Colors.secondary,
     fontWeight: "bold",
-    paddingHorizontal: widthPercentageToDP('2.5%'),
+    paddingHorizontal: widthPercentageToDP("2.5%"),
     // height: heightPercentageToDP("5%"),
-    justifyContent: 'space-evenly'
+    justifyContent: "space-evenly",
     // width: widthPercentageToDP("16%"),
   },
   infoText: {
     fontFamily: "Helvetica",
-    fontSize: widthPercentageToDP("5%"),
+    fontSize: widthPercentageToDP("4%"),
     color: Colors.secondary,
     paddingLeft: widthPercentageToDP("2%"),
   },
   emergencyDetails: {
     paddingHorizontal: widthPercentageToDP("2%"),
     width: widthPercentageToDP("67%"),
-    height: heightPercentageToDP("20%"),
-    // backgroundColor: 'blue',
+    // backgroundColor: "blue",
     overflow: "scroll",
   },
   emergencyDetailsContainer: {
-    marginTop: heightPercentageToDP('1%'),
-    height: heightPercentageToDP('35%')
+    marginTop: heightPercentageToDP("1%"),
+    height: "50%", //heightPercentageToDP('35%')
   },
   endButton: {
     width: widthPercentageToDP("80%"),

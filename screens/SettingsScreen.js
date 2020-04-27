@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   photoContainer: {
     flexDirection: "row",
-    marginTop: heightPercentageToDP("15%"),
+    marginTop: '25%',//heightPercentageToDP("15%"),
     alignItems: "center",
     width: widthPercentageToDP("85%"),
     justifyContent: "space-between",

@@ -134,7 +134,7 @@ const AcceptRequestScreen = () => {
             <View
               style={{
                 ...styles.textContainer,
-                marginTop: heightPercentageToDP("3%"),
+                marginTop: '2%',//heightPercentageToDP("3%"),
               }}
             >
               <Text style={styles.upperText}>Someone is</Text>
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: widthPercentageToDP("90%"),
-    height: heightPercentageToDP("30%"),
+    height: heightPercentageToDP("25%"),
     borderRadius: widthPercentageToDP("7%"),
   },
   selectedRequestInfoContainer: {
