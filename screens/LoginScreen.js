@@ -37,6 +37,12 @@ const LoginScreen = ({ route, navigation }) => {
     if (route.params.userType=='Requester'){
       navigation.navigate('RequesterScreen');
     }
+    else if (route.params.userType=='EMS Member'){
+      navigation.navigate('EMSMemberScreen');
+    }
+    else if (route.params.userType=='Administrator'){
+      navigation.navigate('AdministratorScreen');
+    }
   };
 
   const onSignupPressHandler = () => {
