@@ -9,6 +9,8 @@ import { AppLoading } from "expo";
 import UserTypeScreen from "./screens/UserTypeScreen.js";
 import LoginScreen from "./screens/LoginScreen.js";
 import RequesterScreen from "./screens/RequesterScreen.js";
+import EMSMemberScreen from './screens/EMSMemberScreen'
+import AdministratorScreen from './screens/AdministratorScreen'
 
 const Stack = createStackNavigator();
 
@@ -62,6 +64,38 @@ export default function App() {
           <Stack.Screen
             name="RequesterScreen"
             component={RequesterScreen}
+            options={{
+              title: "EMS-R",
+              headerStyle: {
+                backgroundColor: Colors.primary,
+              },
+              headerTitleAlign: "center",
+              headerTitleStyle: {
+                fontWeight: "bold",
+                fontSize: 22,
+                color: Colors.tertiary,
+              },
+            }}
+          />
+          <Stack.Screen
+            name="EMSMemberScreen"
+            component={EMSMemberScreen}
+            options={{
+              title: "EMS-R",
+              headerStyle: {
+                backgroundColor: Colors.primary,
+              },
+              headerTitleAlign: "center",
+              headerTitleStyle: {
+                fontWeight: "bold",
+                fontSize: 22,
+                color: Colors.tertiary,
+              },
+            }}
+          />
+          <Stack.Screen
+            name="AdministratorScreen"
+            component={AdministratorScreen}
             options={{
               title: "EMS-R",
               headerStyle: {
