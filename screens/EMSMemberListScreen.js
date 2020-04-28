@@ -4,14 +4,9 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   TextInput,
   ScrollView,
   Alert,
-  Modal,
-  TouchableOpacityBase,
-  Animated,
-  Button,
   FlatList,
 } from "react-native";
 import Colors from "../constants/colors.js";
@@ -19,14 +14,8 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
-import { Ionicons, Entypo } from "@expo/vector-icons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
 import MyButton from "../components/MyButton";
 import Photo from "../components/Photo";
-import * as Progress from "react-native-progress";
-import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
 
 const AcceptRequestScreen = () => {

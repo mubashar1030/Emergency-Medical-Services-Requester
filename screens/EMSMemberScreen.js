@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  ScrollView,
-  Alert,
-  Modal,
 } from "react-native";
 import Colors from "../constants/colors.js";
 import {

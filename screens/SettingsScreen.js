@@ -3,15 +3,8 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  Image,
   TextInput,
   ScrollView,
-  Alert,
-  Modal,
-  TouchableOpacityBase,
-  Animated,
-  Button,
 } from "react-native";
 import Colors from "../constants/colors.js";
 import {

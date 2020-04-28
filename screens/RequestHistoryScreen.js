@@ -4,14 +4,7 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
-  TextInput,
   ScrollView,
-  Alert,
-  Modal,
-  TouchableOpacityBase,
-  Animated,
-  Button,
   FlatList,
 } from "react-native";
 import Colors from "../constants/colors.js";
