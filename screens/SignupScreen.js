@@ -38,6 +38,7 @@ const SignupScreen = () => {
   const [newPhone, setNewPhone] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newConfirmPassword, setNewConfirmPassword] = useState("");
+  const [picture,setPicture] = useState(require('../assets/dummy.png'))
   let content;
 
   const loginPressHandler = () => {
@@ -73,6 +74,10 @@ const SignupScreen = () => {
       console.log(E);
     }
   };
+
+  const signupHandler = () => {
+    console.log('Sign up Pressed')
+  }
 
   if (!isNextPressed) {
     content = (
@@ -140,7 +145,7 @@ const SignupScreen = () => {
       <View style={styles.container}>
         <View style={styles.photoContainer}>
           <Photo
-            photo={require("../assets/dummy.png")}
+            photo={picture}
             photoStyle={styles.photo}
           />
           <MyButton
