@@ -253,6 +253,8 @@ const styles = StyleSheet.create({
   mapContainer: {
     marginTop: heightPercentageToDP("5%"),
     borderRadius: widthPercentageToDP("7%"),
+    width: widthPercentageToDP("90%"),
+    height: heightPercentageToDP("60%"),
     elevation: 2,
     overflow: "hidden",
     backgroundColor: Colors.tertiary,
