@@ -7,7 +7,7 @@
       "android",
       "web"
     ],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -26,7 +26,12 @@
     },
     "android": {
       "package": "com.cs360.emsr",
-      "versionCode": 1
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCTJ-sFEc7qRNFe0x4iF4qb7iL8eT8JtKA"
+        }
+      }
     }
   }
 }
