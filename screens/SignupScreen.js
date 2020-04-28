@@ -30,15 +30,18 @@ import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
 import { Content } from "native-base";
 import * as ImagePicker from 'expo-image-picker';
+import { signup } from '../components/dbComm'
 
-const SignupScreen = () => {
+
+
+const SignupScreen = ({ route, navigation }) => {
   const [isNextPressed, setIsNextPressed] = useState(false);
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newConfirmPassword, setNewConfirmPassword] = useState("");
-  const [picture,setPicture] = useState(require('../assets/dummy.png'))
+  const [picture, setPicture] = useState(require('../assets/dummy.png'))
   let content;
 
   const loginPressHandler = () => {
@@ -75,9 +78,31 @@ const SignupScreen = () => {
     }
   };
 
-  const signupHandler = () => {
-    console.log('Sign up Pressed')
-  }
+  const signupHandler = async () => {
+    console.log("Sign Up Finish Pressed.");
+
+    let userProfile = {
+      email: newName || "",
+      user_type: 'requester',
+      phone: newPhone,
+      name: newName,
+    };
+
+    let isValid = await signup(userProfile, newPassword);
+
+    if(isValid) {
+      navigation.navigate('RequesterScreen');
+    }
+    else{
+      Alert.alert("Error in information provided", "", [
+        {
+          text: "Okay",
+          style: "cancel",
+        },
+      ]);
+    }
+
+  };
 
   if (!isNextPressed) {
     content = (
@@ -155,8 +180,8 @@ const SignupScreen = () => {
             onPress={() => handleChangePhoto()}
           />
         </View>
-        <View style={{...styles.addMemberContaniner , height: heightPercentageToDP('15%')}}>
-          <View style={{...styles.inputContainer, height: '45%'}}>
+        <View style={{ ...styles.addMemberContaniner, height: heightPercentageToDP('15%') }}>
+          <View style={{ ...styles.inputContainer, height: '45%' }}>
             <TextInput
               placeholder="Phone"
               onChangeText={(text) => setNewPhone(text)}
@@ -166,14 +191,14 @@ const SignupScreen = () => {
           </View>
         </View>
         <View style={styles.buttonContainer2}>
-            <MyButton onPress={() => signupHandler()} text="Sign up" />
-          </View>
-          <TouchableOpacity
-            style={{ alignItems: "center" }}
-            onPress={() => setIsNextPressed(false)}
-          >
-            <Text style={styles.signupText}>Back</Text>
-          </TouchableOpacity>
+          <MyButton onPress={() => signupHandler()} text="Sign Up" />
+        </View>
+        <TouchableOpacity
+          style={{ alignItems: "center" }}
+          onPress={() => setIsNextPressed(false)}
+        >
+          <Text style={styles.signupText}>Back</Text>
+        </TouchableOpacity>
       </View>
     );
   }

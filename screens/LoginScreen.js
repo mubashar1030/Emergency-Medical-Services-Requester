@@ -14,6 +14,7 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import { signin } from '../components/dbComm'
 
 const LoginScreen = ({ route, navigation }) => {
   const [email, setemail] = useState("");
@@ -22,11 +23,14 @@ const LoginScreen = ({ route, navigation }) => {
   // Signup button should only be displayed if user is Requester.
   // The below condition makes sure of it.
 
-  const onSigninPressHandler = () => {
+  const onSigninPressHandler = async () => {
     console.log("User Type: " + route.params.userType);
     console.log("email: " + email);
     console.log("Password: " + password);
-    if (email !== "cs360" || password !== "cs360") {
+    var memberType = null;
+    let userInfo = await signin(email, password)
+    
+    if (!userInfo) {
       Alert.alert("Login Error", "Incorrect Username and/or Password", [
         {
           text: "Try Again!",
@@ -35,14 +39,24 @@ const LoginScreen = ({ route, navigation }) => {
       ]);
     }
     else {
-      if (route.params.userType=='Requester'){
+      if (route.params.userType=='Requester' && 
+      (userInfo["user_type"] == "requester" || userInfo['user_type'] == 'Admin') ){
         navigation.navigate('RequesterScreen');
       }
-      else if (route.params.userType=='EMS Member'){
+      else if (route.params.userType=='EMS Member' && 
+        (userInfo['user_type'] == 'EMS_Member' || userInfo['user_type'] == 'Admin') ){
         navigation.navigate('EMSMemberScreen');
       }
-      else if (route.params.userType=='Administrator'){
+      else if (route.params.userType=='Administrator' && userInfo['user_type'] == 'Admin'){
         navigation.navigate('AdministratorScreen');
+      }
+      else{
+        Alert.alert("Login Error", "Incorrect Username and/or Password", [
+          {
+            text: "Try Again!",
+            style: "cancel",
+          },
+        ]);
       }
 
     }
