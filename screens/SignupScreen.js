@@ -82,7 +82,7 @@ const SignupScreen = ({ route, navigation }) => {
     console.log("Sign Up Finish Pressed.");
 
     let userProfile = {
-      email: newName || "",
+      email: newEmail || "",
       user_type: 'requester',
       phone: newPhone,
       name: newName,
