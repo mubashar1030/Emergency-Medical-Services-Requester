@@ -14,11 +14,18 @@ import {
 import Photo from "../components/Photo";
 import MyButton from "../components/MyButton";
 import * as ImagePicker from 'expo-image-picker';
+import { photoUrlRetriver, updatePhoto, getName, getPhone, updatePhoneDB } from '../components/dbComm';
+import { auth, db, firebase } from '../components/ApiInfo';
+
+
 
 const SettingScreen = () => {
   const [isEditPressed, setIsEditPressed] = useState(false);
-  const [phone, setPhone] = useState("090078601");
-  const [picture, setPicture] = useState(require("../assets/dummy.png"));
+  const [phone, setPhone] = useState(getPhone());
+  const [picture, setPicture] = useState({ uri: photoUrlRetriver() });
+  const [name, setName] = useState(getName());
+
+
 
   const handleChangePhoto = async () => {
     try {
@@ -30,6 +37,7 @@ const SettingScreen = () => {
       });
       if (!result.cancelled) {
         setPicture({ uri: result.uri });
+        updatePhoto(picture.uri);
       }
 
       console.log(result);
@@ -37,6 +45,12 @@ const SettingScreen = () => {
       console.log(E);
     }
   };
+
+  const updatePhone = () => {
+    setIsEditPressed(false)
+    updatePhoneDB(phone);
+
+  }
 
   let phoneComponent;
   let editButton;
@@ -75,7 +89,7 @@ const SettingScreen = () => {
         }}
         text="Update"
         textStyle={{ ...styles.uploadPhotoText, color: Colors.tertiary }}
-        onPress={() => setIsEditPressed(false)}
+        onPress={() => updatePhone()}
       />
     );
   }
@@ -97,11 +111,11 @@ const SettingScreen = () => {
         <View style={styles.infoContainer}>
           <View style={styles.info}>
             <Text style={styles.label}>Name: </Text>
-            <Text style={styles.infoText}>Dummy</Text>
+            <Text style={styles.infoText}>{name}</Text>
           </View>
           <View style={styles.info}>
             <Text style={styles.label}>Email: </Text>
-            <Text style={styles.infoText}>dummy@dummy.com</Text>
+            <Text style={styles.infoText}>{auth.currentUser.email}</Text>
           </View>
           <View style={styles.info}>
             <Text style={styles.label}>Phone: </Text>

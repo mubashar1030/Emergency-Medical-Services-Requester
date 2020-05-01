@@ -18,6 +18,7 @@ import MyButton from "../components/MyButton";
 import Photo from '../components/Photo'
 import * as Progress from "react-native-progress";
 import call from "react-native-phone-call";
+import { updateRequestDB } from '../components/dbComm';
 
 const GenerateRequestScreen = () => {
   const [location, setLocation] = useState(null);
@@ -42,9 +43,7 @@ const GenerateRequestScreen = () => {
       }
       console.log("hello1");
       setTimeout(() => {
-        console.log("here");
         Location.getCurrentPositionAsync({}).then((location) => {
-          console.log("works");
           setLocation(location);
           setRegion({
             latitude: location.coords.latitude,
@@ -85,6 +84,7 @@ const GenerateRequestScreen = () => {
     setShowMap(true);
     setIsRequestGenerated(true);
     setIsRequestAccepted(false);
+    updateRequestDB(region, emergencyDetails);
   };
 
   const onEndRequestHandler = () => {

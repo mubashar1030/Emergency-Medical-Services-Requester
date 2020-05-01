@@ -62,7 +62,7 @@ const SignupScreen = ({ route, navigation }) => {
   };
   const handleChangePhoto = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
+        let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         aspect: [1, 1],
@@ -72,9 +72,8 @@ const SignupScreen = ({ route, navigation }) => {
         setPicture({ uri: result.uri });
       }
 
-      console.log(result);
-    } catch (E) {
-      console.log(E);
+    } catch (Error) {
+      console.log(Error);
     }
   };
 
@@ -88,12 +87,12 @@ const SignupScreen = ({ route, navigation }) => {
       name: newName,
     };
 
-    let isValid = await signup(userProfile, newPassword);
+    let isValid = await signup(userProfile, newPassword, picture.uri);
 
-    if(isValid) {
+    if (isValid) {
       navigation.navigate('RequesterScreen');
     }
-    else{
+    else {
       Alert.alert("Error in information provided", "", [
         {
           text: "Okay",
