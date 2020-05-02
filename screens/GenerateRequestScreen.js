@@ -18,7 +18,7 @@ import MyButton from "../components/MyButton";
 import Photo from '../components/Photo'
 import * as Progress from "react-native-progress";
 import call from "react-native-phone-call";
-import { updateRequestDB } from '../components/dbComm';
+import { updateRequestDB, removeRequestFromServicing } from '../components/dbComm';
 import { auth, db, firebase } from '../components/ApiInfo';
 
 
@@ -119,6 +119,8 @@ const GenerateRequestScreen = () => {
       });
   }
 
+  
+
   const onRequestEMSPressHandler = () => {
     console.log(emergencyDetails);
     setShowMap(true);
@@ -132,6 +134,8 @@ const GenerateRequestScreen = () => {
     setShowMap(true);
     setIsRequestGenerated(false);
     setIsRequestAccepted(false);
+    removeRequestFromServicing('email');
+
   };
 
   const makeCall = (phoneNumber) => {

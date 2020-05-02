@@ -18,7 +18,7 @@ import Photo from "../components/Photo";
 import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
 import { auth, db, firebase } from '../components/ApiInfo';
-import { getCurrentUser, getTime, photoUrlRetriver } from '../components/dbComm';
+import { getCurrentUser, getTime, photoUrlRetriver, removeRequestFromServicing } from '../components/dbComm';
 
 const AcceptRequestScreen = () => {
   const [currentRequests, setCurrentRequests] = useState([]);
@@ -90,9 +90,12 @@ const AcceptRequestScreen = () => {
     requesterAndMemberDetails['EMS Member Photo'] = {uri : photoUrlRetriver()};
     requesterAndMemberDetails['dateTime Accepted'] = getTime();
     db.collection('servicing requests').add(requesterAndMemberDetails);
+    db.collection('history').add(requesterAndMemberDetails);
     console.log("Success: The Request Is Moved To 'Servicing Requests'");
 
   }
+
+  
 
   if (!isRequestAccepted) {
     if (currentRequests.length === 0) {
@@ -326,7 +329,10 @@ const AcceptRequestScreen = () => {
             }}
             text="End"
             textStyle={{ fontSize: widthPercentageToDP("5%") }}
-            onPress={() => setIsRequestAccepted(false)}
+            onPress={() => {
+              setIsRequestAccepted(false);
+              removeRequestFromServicing('EMS Member Email'); 
+            }}
           />
         </View>
       </View>
