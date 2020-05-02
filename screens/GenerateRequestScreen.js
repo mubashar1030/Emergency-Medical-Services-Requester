@@ -159,11 +159,12 @@ const GenerateRequestScreen = () => {
           </View>
         </View>
       );
-      console.log("hit");
+      console.log("Success: Waiting For Request To Be Accepted...");
       setTimeout(() => {
         setIsRequestAccepted(true);
       }, 3000);
     } else {
+      console.log("Success: Request Accepted");
       content = (
         <View style={styles.container}>
           {/* <View style={styles.photoContainer}>

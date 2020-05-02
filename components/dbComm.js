@@ -158,14 +158,33 @@ const updatePhoneDB = async (newPhone) => {
 
 }
 
+const getTime = () => {
+    let date_ob = new Date();
+
+    let date = ("0" + date_ob.getDate()).slice(-2);
+    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+    let year = date_ob.getFullYear();
+
+    let hours = date_ob.getHours() % 12;
+    let minutes = date_ob.getMinutes();
+
+
+    let currenttime = hours + ":" + minutes + " " + date + "-" + month + "-" + year;
+    return currenttime;
+}
+
 const updateRequestDB = (region, emergencyDetails) => {
     let requestInfo = {
         name: CurrentUser['name'],
         email: CurrentUser['email'],
         phone: CurrentUser['phone'],
-        details: emergencyDetails,
-        location: region
-
+        emergencyDetails: emergencyDetails,
+        photo: { uri: photoUrlRetriver() },
+        latitude: region['latitude'],
+        latitudeDelta: region['latitudeDelta'],
+        longitude: region['longitude'],
+        longitudeDelta: region['longitudeDelta'],
+        dateTime: getTime(),
     };
     db.collection('pending requests').add(requestInfo);
 }
