@@ -29,10 +29,8 @@ import * as Progress from "react-native-progress";
 import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
 import { Content } from "native-base";
-import * as ImagePicker from 'expo-image-picker';
-import { signup } from '../components/dbComm'
-
-
+import * as ImagePicker from "expo-image-picker";
+import { signup } from "../components/dbComm";
 
 const SignupScreen = ({ route, navigation }) => {
   const [isNextPressed, setIsNextPressed] = useState(false);
@@ -41,7 +39,8 @@ const SignupScreen = ({ route, navigation }) => {
   const [newPhone, setNewPhone] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newConfirmPassword, setNewConfirmPassword] = useState("");
-  const [picture, setPicture] = useState(require('../assets/dummy.png'))
+  const [picture, setPicture] = useState(require("../assets/dummy.png"));
+  const [isSigningUp, setIsSigningUp] = useState(false);
   let content;
 
   const loginPressHandler = () => {
@@ -62,7 +61,7 @@ const SignupScreen = ({ route, navigation }) => {
   };
   const handleChangePhoto = async () => {
     try {
-        let result = await ImagePicker.launchImageLibraryAsync({
+      let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         aspect: [1, 1],
@@ -71,7 +70,6 @@ const SignupScreen = ({ route, navigation }) => {
       if (!result.cancelled) {
         setPicture({ uri: result.uri });
       }
-
     } catch (Error) {
       console.log(Error);
     }
@@ -82,17 +80,18 @@ const SignupScreen = ({ route, navigation }) => {
 
     let userProfile = {
       email: newEmail || "",
-      user_type: 'requester',
+      user_type: "requester",
       phone: newPhone,
       name: newName,
     };
 
+    setIsSigningUp(true);
     let isValid = await signup(userProfile, newPassword, picture.uri);
+    setIsSigningUp(false);
 
     if (isValid) {
-      navigation.navigate('RequesterScreen');
-    }
-    else {
+      navigation.navigate("RequesterScreen");
+    } else {
       Alert.alert("Error in information provided", "", [
         {
           text: "Okay",
@@ -100,8 +99,21 @@ const SignupScreen = ({ route, navigation }) => {
         },
       ]);
     }
-
   };
+
+  // The below condition brings up a signing you up overlay when user information
+  // is being processed by database.
+  let signingUpOverlay;
+  if (isSigningUp) {
+    signingUpOverlay = (
+      <View style={styles.signingUpOverlayContainer}>
+        <Progress.Bar indeterminate width={200} color={Colors.secondary} />
+        <Text style={{ ...styles.signupText, paddingTop: "2%" }}>
+          Signing You Up...
+        </Text>
+      </View>
+    );
+  }
 
   if (!isNextPressed) {
     content = (
@@ -168,10 +180,7 @@ const SignupScreen = ({ route, navigation }) => {
     content = (
       <View style={styles.container}>
         <View style={styles.photoContainer}>
-          <Photo
-            photo={picture}
-            photoStyle={styles.photo}
-          />
+          <Photo photo={picture} photoStyle={styles.photo} />
           <MyButton
             buttonStyle={styles.uploadPhotoButton}
             text="Upload Picture"
@@ -179,8 +188,13 @@ const SignupScreen = ({ route, navigation }) => {
             onPress={() => handleChangePhoto()}
           />
         </View>
-        <View style={{ ...styles.addMemberContaniner, height: heightPercentageToDP('15%') }}>
-          <View style={{ ...styles.inputContainer, height: '45%' }}>
+        <View
+          style={{
+            ...styles.addMemberContaniner,
+            height: heightPercentageToDP("15%"),
+          }}
+        >
+          <View style={{ ...styles.inputContainer, height: "45%" }}>
             <TextInput
               placeholder="Phone"
               onChangeText={(text) => setNewPhone(text)}
@@ -198,6 +212,7 @@ const SignupScreen = ({ route, navigation }) => {
         >
           <Text style={styles.signupText}>Back</Text>
         </TouchableOpacity>
+        {signingUpOverlay}
       </View>
     );
   }
@@ -281,6 +296,16 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     fontSize: heightPercentageToDP("2%"),
     color: Colors.secondary,
+  },
+  signingUpOverlayContainer: {
+    elevation: 10,
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: Colors.tertiary,
+    opacity: 0.8,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
