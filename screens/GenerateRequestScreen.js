@@ -19,6 +19,8 @@ import Photo from '../components/Photo'
 import * as Progress from "react-native-progress";
 import call from "react-native-phone-call";
 import { updateRequestDB } from '../components/dbComm';
+import { auth, db, firebase } from '../components/ApiInfo';
+
 
 const GenerateRequestScreen = () => {
   const [location, setLocation] = useState(null);
@@ -33,6 +35,7 @@ const GenerateRequestScreen = () => {
   const [showMap, setShowMap] = useState(true);
   const [isRequestAccepted, setIsRequestAccepted] = useState(false);
   const [emergencyDetails, setEmergencyDetails] = useState("");
+  const [emsMemberDetails, setEmsMemberDetails] = useState({name: '', phone: '', photo: {}});
 
   useEffect(() => {
     (async () => {
@@ -41,7 +44,7 @@ const GenerateRequestScreen = () => {
         setErrorMsg("Permission to access location was denied");
         console.log("hello");
       }
-      console.log("hello1");
+      console.log("Success: Location Permission Granted");
       setTimeout(() => {
         Location.getCurrentPositionAsync({}).then((location) => {
           setLocation(location);
@@ -67,7 +70,7 @@ const GenerateRequestScreen = () => {
         onRegionChange={(reg) => setRegion(reg)}
         showsUserLocation
         showsMyLocationButton
-        // region={region}
+      // region={region}
       >
         <Marker
           coordinate={{
@@ -79,12 +82,50 @@ const GenerateRequestScreen = () => {
     );
   }
 
+  const acceptanceListener = () => {
+    let observer = db.collection('servicing requests')
+      .onSnapshot(querySnapshot => {
+        querySnapshot.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            // console.log('New Request: ', change.doc.data());
+            var item = change.doc.data();
+            var valuePresent = false;
+
+            if (item['email'] == auth.currentUser.email) {
+              valuePresent = true;
+              console.log(valuePresent);
+              setEmsMemberDetails({name: item['EMS Member Name'], phone: item['EMS Member Phone'], photo: item['EMS Member Photo']});
+              setIsRequestAccepted(true);
+            }
+
+            // console.log("listener add requestLst: ", requestLst);
+            // console.log("listener add item: ", item);
+            // console.log("listener add currentCrequests: ", currentRequests);
+            
+
+          }
+          if (change.type === 'modified') {
+            console.log('Modified Request: ', change.doc.data());
+          }
+          if (change.type === 'removed') {
+            // console.log('Removed Request: ', change.doc.data());
+            let item = change.doc.data();
+            
+            console.log("listener: ")
+
+          }
+
+        });
+      });
+  }
+
   const onRequestEMSPressHandler = () => {
     console.log(emergencyDetails);
     setShowMap(true);
     setIsRequestGenerated(true);
     setIsRequestAccepted(false);
     updateRequestDB(region, emergencyDetails);
+    acceptanceListener();
   };
 
   const onEndRequestHandler = () => {
@@ -159,10 +200,14 @@ const GenerateRequestScreen = () => {
           </View>
         </View>
       );
-      console.log("Success: Waiting For Request To Be Accepted...");
-      setTimeout(() => {
-        setIsRequestAccepted(true);
-      }, 3000);
+      console.log("Update: Waiting For Request To Be Accepted...");
+
+      //Listener
+
+
+      // setTimeout(() => {
+      //   setIsRequestAccepted(true);
+      // }, 3000);
     } else {
       console.log("Success: Request Accepted");
       content = (
@@ -173,7 +218,7 @@ const GenerateRequestScreen = () => {
               style={styles.photo}
             />
           </View> */}
-          <Photo photo={require("../assets/dummy.png")} photoContainerStyle={{marginTop: '20%'}}/>
+          <Photo photo={emsMemberDetails['photo']} photoContainerStyle={{ marginTop: '20%' }} />
           <View
             style={{
               ...styles.waitingTextContainer,
@@ -184,10 +229,10 @@ const GenerateRequestScreen = () => {
             <Text style={styles.waitingText2}>On Their Way!</Text>
           </View>
           <View style={styles.infoTextContainer}>
-            <Text style={styles.infoText}>Name: Call Me</Text>
+            <Text style={styles.infoText}>Name: {emsMemberDetails['name']}</Text>
             <View style={styles.phoneContainer}>
-              <Text style={styles.infoText}>Phone: 090078601</Text>
-              <TouchableOpacity style={styles.callButton} onPress={()=>makeCall('090078601')}>
+              <Text style={styles.infoText}>Phone: {emsMemberDetails['phone']}</Text>
+              <TouchableOpacity style={styles.callButton} onPress={() => makeCall(emsMemberDetails['phone'])}>
                 <Text style={styles.callButtonText}>Call</Text>
               </TouchableOpacity>
             </View>

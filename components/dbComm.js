@@ -189,6 +189,10 @@ const updateRequestDB = (region, emergencyDetails) => {
     db.collection('pending requests').add(requestInfo);
 }
 
+const getCurrentUser = () => {
+    return CurrentUser;
+}
+
 export {
     signup,
     signin,
@@ -200,4 +204,6 @@ export {
     getPhone,
     updatePhoneDB,
     updateRequestDB,
+    getCurrentUser,
+    getTime,
 }

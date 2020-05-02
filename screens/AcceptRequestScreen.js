@@ -18,6 +18,7 @@ import Photo from "../components/Photo";
 import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
 import { auth, db, firebase } from '../components/ApiInfo';
+import { getCurrentUser, getTime, photoUrlRetriver } from '../components/dbComm';
 
 const AcceptRequestScreen = () => {
   const [currentRequests, setCurrentRequests] = useState([]);
@@ -31,45 +32,66 @@ const AcceptRequestScreen = () => {
     let observer = db.collection('pending requests')
       .onSnapshot(querySnapshot => {
         querySnapshot.docChanges().forEach(change => {
-          try {
-            if (change.type === 'added') {
-              console.log('New Request: ', change.doc.data());
-              var valuePresent =false;
-              for (var i = 0; i < currentRequests.length; i++) {
-                if (requestLst[i]['email'] == item['email']) {
-                  valuePresent = true;
-                  break;
-                }
+          if (change.type === 'added') {
+            // console.log('New Request: ', change.doc.data());
+            var item = change.doc.data();
+            let requestLst = currentRequests;
+            var valuePresent = false;
+            for (var i = 0; i < requestLst.length; i++) {
+              if (requestLst[i]['email'] == item['email']) {
+                valuePresent = true;
+                console.log(valuePresent);
+                break;
               }
-              console.log(valuePresent);
-              if(!valuePresent) {
-                setCurrentRequests(previousRequests => [...previousRequests, change.doc.data()]);
-              }
+            }
+            // console.log("listener add requestLst: ", requestLst);
+            // console.log("listener add item: ", item);
+            // console.log("listener add currentCrequests: ", currentRequests);
+            if (!valuePresent) {
+              setCurrentRequests(previousRequests => [...previousRequests, change.doc.data()]);
+            }
 
-              
-            }
-            if (change.type === 'modified') {
-              console.log('Modified Request: ', change.doc.data());
-            }
-            if (change.type === 'removed') {
-              console.log('Removed Request: ', change.doc.data());
-              let item = change.doc.data();
-              let requestLst = currentRequests
-              for (var i = 0; i < currentRequests.length; i++) {
-                if (requestLst[i]['email'] == item['email']) {
-                  requestLst.splice(i, 1);
-                  break;
-                }
-              }
-              setCurrentRequests(requestLst);
-              console.log("listener: ", currentRequests)
 
-            }
-          } catch (error) {
-            console.log(error);
           }
+          if (change.type === 'modified') {
+            console.log('Modified Request: ', change.doc.data());
+          }
+          if (change.type === 'removed') {
+            // console.log('Removed Request: ', change.doc.data());
+            let item = change.doc.data();
+            let requestLst = currentRequests;
+            for (var i = 0; i < currentRequests.length; i++) {
+              if (requestLst[i]['email'] == item['email']) {
+                requestLst.splice(i, 1);
+                break;
+              }
+            }
+            setCurrentRequests(requestLst);
+            console.log("listener: ", currentRequests)
+
+          }
+
         });
       });
+  }
+
+  const updateRequester = () => {
+    var ref = db.collection('pending requests').where('email', '==', requestSelected['email']);
+    ref.get().then(function (querySnapshot) {
+      querySnapshot.forEach(function (doc) {
+        doc.ref.delete();
+      });
+    });
+    let memberDetails = getCurrentUser();
+    requesterAndMemberDetails = requestSelected;
+    requesterAndMemberDetails['EMS Member Name'] = memberDetails['name'];
+    requesterAndMemberDetails['EMS Member Email'] = memberDetails['email'];
+    requesterAndMemberDetails['EMS Member Phone'] = memberDetails['phone'];
+    requesterAndMemberDetails['EMS Member Photo'] = {uri : photoUrlRetriver()};
+    requesterAndMemberDetails['dateTime Accepted'] = getTime();
+    db.collection('servicing requests').add(requesterAndMemberDetails);
+    console.log("Success: The Request Is Moved To 'Servicing Requests'");
+
   }
 
   if (!isRequestAccepted) {
@@ -82,76 +104,13 @@ const AcceptRequestScreen = () => {
           </View>
         </View>
       );
-      
+
       console.log("No requests: ", currentRequests);
       //Listener 
       requestListener();
 
-      // let doc = db.collection('pending requests');
-
-      // let observer = doc.onSnapshot(docSnapshot => {
-      //   console.log(`Received doc snapshot: ${docSnapshot}`);
-      //   // ...
-      // }, err => {
-      //   console.log(`Encountered error: ${err}`);
-      // });
-
-
-      // let pendingRequests = db.collection('pending requests').get()
-      //   .then(snapshot => {
-      //     if (snapshot.empty) {
-      //       console.log('Update: No Pending Requests');
-      //       return;
-      //     }
-      //     snapshot.forEach(doc => {
-      //       console.log(doc.id, '=>', doc.data());
-      //       setCurrentRequests( previousRequests => [...previousRequests, doc.data()])
-      //     });
-      //   })
-      //   .catch(err => {
-      //     console.log('Error: getting documents', err);
-      //   });
-
-
-      // setTimeout(() => {
-      //   setCurrentRequests([
-      //     ...currentRequests,
-      //     {
-      //       id: Math.floor(Math.random() * 1000).toString(),
-      //       name: "Mubashar",
-      //       dateTime: "27/04/2019 04:04",
-      //       photo: require("../assets/dummy.png"),
-      //       emergencyDetails: "Blah Blah Blah",
-      //       phone: "090078601",
-      //       latitude: 31.47,
-      //       longitude: 74.4111,
-      //     },
-      //     {
-      //       id: Math.floor(Math.random() * 1000).toString(),
-      //       name: "Mubashar",
-      //       dateTime: "27/04/2019 04:04",
-      //       photo: require("../assets/dummy.png"),
-      //       emergencyDetails: "Blah Blah Blah",
-      //       phone: "090078601",
-      //       latitude: 31.47,
-      //       longitude: 74.4111,
-      //     },
-      //     {
-      //       id: Math.floor(Math.random() * 1000).toString(),
-      //       name: "Mubashar",
-      //       dateTime: "27/04/2019 04:04",
-      //       photo: require("../assets/dummy.png"),
-      //       emergencyDetails: "Blah Blah Blah",
-      //       phone: "090078601",
-      //       latitude: 31.47,
-      //       longitude: 74.4111,
-      //     },
-      //   ]);
-      // }, 2000);
     } else {
       if (!isRequestSelected) {
-        console.log("Update: There Are Pending Requests");
-        console.log("Yes requests: ", currentRequests);
 
         content = (
           <View style={styles.container}>
@@ -383,6 +342,7 @@ const AcceptRequestScreen = () => {
     setIsRequestAccepted(true);
     setIsRequestSelected(false);
     setRequestAccepted(requestSelected);
+    updateRequester() // <<HERE
   };
   const makeCall = (phoneNumber) => {
     const args = {
