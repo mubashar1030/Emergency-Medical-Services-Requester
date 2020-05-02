@@ -14,22 +14,24 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
-import { signin } from '../components/dbComm'
+import { signin } from "../components/dbComm";
+import * as Progress from "react-native-progress";
+import { database } from "firebase";
 
 const LoginScreen = ({ route, navigation }) => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Signup button should only be displayed if user is Requester.
-  // The below condition makes sure of it.
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const onSigninPressHandler = async () => {
     console.log("User Type: " + route.params.userType);
     console.log("email: " + email);
     console.log("Password: " + password);
     var memberType = null;
-    let userInfo = await signin(email, password)
-    
+    setIsVerifying(true);
+    let userInfo = await signin(email, password);
+    setIsVerifying(false);
+
     if (!userInfo) {
       Alert.alert("Login Error", "Incorrect Username and/or Password", [
         {
@@ -37,20 +39,25 @@ const LoginScreen = ({ route, navigation }) => {
           style: "cancel",
         },
       ]);
-    }
-    else {
-      if (route.params.userType=='Requester' && 
-      (userInfo["user_type"] == "requester" || userInfo['user_type'] == 'Admin') ){
-        navigation.navigate('RequesterScreen');
-      }
-      else if (route.params.userType=='EMS Member' && 
-        (userInfo['user_type'] == 'EMS_Member' || userInfo['user_type'] == 'Admin') ){
-        navigation.navigate('EMSMemberScreen');
-      }
-      else if (route.params.userType=='Administrator' && userInfo['user_type'] == 'Admin'){
-        navigation.navigate('AdministratorScreen');
-      }
-      else{
+    } else {
+      if (
+        route.params.userType == "Requester" &&
+        (userInfo["user_type"] == "requester" ||
+          userInfo["user_type"] == "Admin")
+      ) {
+        navigation.navigate("RequesterScreen");
+      } else if (
+        route.params.userType == "EMS Member" &&
+        (userInfo["user_type"] == "EMS_Member" ||
+          userInfo["user_type"] == "Admin")
+      ) {
+        navigation.navigate("EMSMemberScreen");
+      } else if (
+        route.params.userType == "Administrator" &&
+        userInfo["user_type"] == "Admin"
+      ) {
+        navigation.navigate("AdministratorScreen");
+      } else {
         Alert.alert("Login Error", "Incorrect Username and/or Password", [
           {
             text: "Try Again!",
@@ -58,16 +65,30 @@ const LoginScreen = ({ route, navigation }) => {
           },
         ]);
       }
-
     }
   };
 
+  // The below condition brings up a verifying overlay when user information
+  // is being verfying by database.
+  let verifyOverlay;
+  if (isVerifying) {
+    verifyOverlay = (
+      <View style={styles.verifyOverlayContainer}>
+        <Progress.Bar indeterminate width={200} color={Colors.secondary} />
+        <Text style={{ ...styles.signupText, paddingTop: "2%" }}>
+          Verifying...
+        </Text>
+      </View>
+    );
+  }
+
   const onSignupPressHandler = () => {
     console.log("Sign up Button is Pressed.");
-    navigation.navigate('SignupScreen');
-    
+    navigation.navigate("SignupScreen");
   };
 
+  // Signup button should only be displayed if user is Requester.
+  // The below condition makes sure of it.
   let signupButton;
   if (route.params.userType === "Requester") {
     signupButton = (
@@ -110,15 +131,17 @@ const LoginScreen = ({ route, navigation }) => {
         </View>
         {signupButton}
       </View>
+      {verifyOverlay}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    paddingVertical: heightPercentageToDP("10%"),
+    // paddingVertical: heightPercentageToDP("10%"),
     alignItems: "center",
     justifyContent: "center",
+    flexGrow: 1,
   },
   container: {
     flex: 1,
@@ -169,6 +192,16 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     fontSize: heightPercentageToDP("2.5%"),
     color: Colors.secondary,
+  },
+  verifyOverlayContainer: {
+    elevation: 10,
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: Colors.tertiary,
+    opacity: 0.8,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
