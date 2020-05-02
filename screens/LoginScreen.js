@@ -41,9 +41,8 @@ const LoginScreen = ({ route, navigation }) => {
       ]);
     } else {
       if (
-        route.params.userType == "Requester" &&
-        (userInfo["user_type"] == "requester" ||
-          userInfo["user_type"] == "Admin")
+        route.params.userType == "Requester" && (userInfo["user_type"] == "requester" || userInfo["user_type"] == "Admin" 
+          || userInfo["user_type"] == "EMS_Member")
       ) {
         navigation.navigate("RequesterScreen");
       } else if (
