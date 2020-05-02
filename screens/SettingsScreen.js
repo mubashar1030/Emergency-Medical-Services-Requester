@@ -37,7 +37,7 @@ const SettingScreen = () => {
       });
       if (!result.cancelled) {
         setPicture({ uri: result.uri });
-        updatePhoto(picture.uri);
+        updatePhoto(result.uri);
       }
 
       console.log(result);
