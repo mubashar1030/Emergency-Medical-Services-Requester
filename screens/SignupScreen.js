@@ -45,6 +45,7 @@ const SignupScreen = ({ route, navigation }) => {
 
   const loginPressHandler = () => {
     console.log("login Pressed");
+    navigation.goBack();
   };
 
   const nextPressHandler = () => {
