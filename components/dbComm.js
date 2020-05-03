@@ -196,11 +196,12 @@ const getCurrentUser = () => {
 const removeRequestFromServicing = (userType) => {
     var ref = db.collection('servicing requests').where(userType, '==', auth.currentUser.email);
     ref.get().then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        doc.ref.delete();
-      });
+        querySnapshot.forEach(function (doc) {
+            doc.ref.delete();
+        });
     });
-  }
+}
+
 
 export {
     signup,

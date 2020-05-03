@@ -21,23 +21,31 @@ import Photo from "../components/Photo";
 import * as Progress from "react-native-progress";
 import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
+import { auth, db, firebase } from '../components/ApiInfo';
 
 const AcceptRequestScreen = () => {
-  const [requestHistory, setRequestHistory] = useState([
-    {
-      id: Math.floor(Math.random() * 1000).toString(),
-      requester: "John",
-      responder: "Smith",
-      requesterPhone: "090078601",
-      responderPhone: "090078601",
-      Location: "31.2 N 73.2 E",
-      emergencyDetails: "Blah blah blah",
-      dateTime: "27/04/2020 19:30",
-    },
-  ]);
+  const [requestHistory, setRequestHistory] = useState([]);
   const [isRequestSelected, setIsRequestSelected] = useState(false);
   const [requestSelected, setRequestSelected] = useState(null);
+  const [historyUpdate, setHistoryUpdate] = useState(false);
   let content;
+
+  const historyListener = () => {
+    let observer = db.collection('history')
+      .onSnapshot(querySnapshot => {
+        querySnapshot.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            var item = change.doc.data();
+            setRequestHistory(requestHistory => [...requestHistory, item]);
+          }
+        });
+      });
+  }
+  const [getHistroy, setGetHistroy] = useState(() => {
+    historyListener();
+  })
+
+
   if (!isRequestSelected) {
     content = (
       <View style={styles.container}>
@@ -56,14 +64,14 @@ const AcceptRequestScreen = () => {
               <View style={styles.infoContainer}>
                 <InfoText
                   label="Requester: "
-                  text={item.requester}
+                  text={item.name}
                   border={1}
                   labelWidth={widthPercentageToDP("22%")}
                   fontSize={widthPercentageToDP("4%")}
                 />
                 <InfoText
                   label="Responder: "
-                  text={item.responder}
+                  text={item['EMS Member Name']}
                   border={1}
                   labelWidth={widthPercentageToDP("22%")}
                   fontSize={widthPercentageToDP("4%")}
@@ -89,28 +97,28 @@ const AcceptRequestScreen = () => {
           <View style={styles.requestDetails}>
             <InfoText
               label="Requester: "
-              text={requestSelected.requester}
+              text={requestSelected['name']}
               border={1}
               labelWidth={widthPercentageToDP("22%")}
               fontSize={widthPercentageToDP("4%")}
             />
             <InfoText
               label="Phone: "
-              text={requestSelected.requesterPhone}
+              text={requestSelected['phone']}
               border={1}
               labelWidth={widthPercentageToDP("22%")}
               fontSize={widthPercentageToDP("4%")}
             />
             <InfoText
               label="Responder: "
-              text={requestSelected.responder}
+              text={requestSelected['EMS Member Name']}
               border={1}
               labelWidth={widthPercentageToDP("22%")}
               fontSize={widthPercentageToDP("4%")}
             />
             <InfoText
               label="Phone: "
-              text={requestSelected.responderPhone}
+              text={requestSelected['EMS Member Phone']}
               border={1}
               labelWidth={widthPercentageToDP("22%")}
               fontSize={widthPercentageToDP("4%")}
