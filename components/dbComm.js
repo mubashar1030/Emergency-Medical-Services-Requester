@@ -56,7 +56,12 @@ async function signup(userProfile, Password, uri) {
         return 0;
     }
 
-    await auth.createUserWithEmailAndPassword(userProfile['email'], Password);
+    let response = await auth.createUserWithEmailAndPassword(userProfile['email'], Password)
+        .then( () => {return true;})
+        .catch ( () => {return false;} );
+    if (!response) {
+        return response;
+    }
     await db.collection('users').add(userProfile)
 
     uploadImage(uri, userProfile["email"])

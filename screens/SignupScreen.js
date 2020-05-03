@@ -93,7 +93,7 @@ const SignupScreen = ({ route, navigation }) => {
     if (isValid) {
       navigation.navigate("RequesterScreen");
     } else {
-      Alert.alert("Error in information provided", "", [
+      Alert.alert("Error: Email provided already in use or Incorrect ", "", [
         {
           text: "Okay",
           style: "cancel",
