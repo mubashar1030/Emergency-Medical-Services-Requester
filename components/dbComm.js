@@ -1,4 +1,4 @@
-import { auth, db, firebase } from './ApiInfo';
+import { auth, db, firebase, admin } from './ApiInfo';
 
 let CurrentEmail = '';
 let CurrentUser = null;
@@ -51,14 +51,13 @@ async function signup(userProfile, Password, uri) {
     let unique_id = userProfile['email'];
     let snapshot = await get_user(unique_id);
 
-    console.log("check getuser:", snapshot)
-    if (snapshot != null) { // User already exists
+    if (snapshot != null) {
         console.log("Error: User Already Exists");
         return 0;
     }
 
-    await db.collection('users').add(userProfile)
     await auth.createUserWithEmailAndPassword(userProfile['email'], Password);
+    await db.collection('users').add(userProfile)
 
     uploadImage(uri, userProfile["email"])
         .then(() => {
@@ -70,6 +69,25 @@ async function signup(userProfile, Password, uri) {
         })
 
     console.log("Success: New User Created")
+    return 1;
+};
+
+async function addNewEmsMember(userProfile, Password) {
+    if (userProfile === undefined || Password === undefined)
+        return 0;
+
+    let unique_id = userProfile['email'];
+    let snapshot = await get_user(unique_id);
+
+    if (snapshot != null) {
+        console.log("Error: User Already Exists");
+        return 0;
+    }
+
+    await auth.createUserWithEmailAndPassword(userProfile['email'], Password);
+    await db.collection('users').add(userProfile)
+
+    console.log("Success: New EMS Member Created")
     return 1;
 };
 
@@ -202,6 +220,27 @@ const removeRequestFromServicing = (userType) => {
     });
 }
 
+const removeMember = async (memberToRemove) => {
+    memberToRemove['user_type'] = 'requester';
+    delete memberToRemove.photo;
+    var ref = await db.collection('users').where("email", '==', memberToRemove['email']);
+    ref.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            doc.ref.set(memberToRemove);
+        });
+    });
+}
+
+const makeAdmin = async (memberToPromote) => {
+    memberToPromote['user_type'] = 'Admin';
+    delete memberToPromote.photo;
+    var ref = await db.collection('users').where("email", '==', memberToPromote['email']);
+    ref.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            doc.ref.set(memberToPromote);
+        });
+    });
+}
 
 export {
     signup,
@@ -217,4 +256,7 @@ export {
     getCurrentUser,
     getTime,
     removeRequestFromServicing,
+    addNewEmsMember,
+    removeMember,
+    makeAdmin,
 }

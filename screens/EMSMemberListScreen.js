@@ -17,32 +17,69 @@ import {
 import MyButton from "../components/MyButton";
 import Photo from "../components/Photo";
 import InfoText from "../components/InfoText";
+import { auth, db, firebase } from '../components/ApiInfo';
+import { addNewEmsMember, removeMember, makeAdmin } from "../components/dbComm";
 
 const AcceptRequestScreen = () => {
   const [isAddNewMember, setIsAddNewMember] = useState(false);
   const [isMemberSelected, setIsMemberSelected] = useState(false);
   const [memberSelected, setMemberSelected] = useState(null);
-  const [memberList, setMemberList] = useState([
-    {
-      id: Math.floor(Math.random() * 1000).toString(),
-      name: "John",
-      phone: "090078601",
-      email: "dummy@dummy.com",
-      photo: require("../assets/dummy.png"),
-    },
-  ]);
+  const [memberList, setMemberList] = useState([]);
 
-  const [newMemberName, setNewMemberName] =useState('');
-  const [newMemberEmail, setNewMemberEmail] =useState('');
-  const [newMemberPhone, setNewMemberPhone] =useState('');
-  const [newMemberPassword, setNewMemberPassword] =useState('');
-  const [newMemberConfirmPassword, setNewMemberConfirmPassword] =useState('');
+  const [newMemberName, setNewMemberName] = useState('');
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberPhone, setNewMemberPhone] = useState('');
+  const [newMemberPassword, setNewMemberPassword] = useState('');
+  const [newMemberConfirmPassword, setNewMemberConfirmPassword] = useState('');
+
+  const memberListener = () => {
+    let observer = db.collection('users')
+      .onSnapshot(querySnapshot => {
+        querySnapshot.docChanges().forEach(async (change) => {
+          if (change.type === 'added') {
+            var item = change.doc.data();
+            var URL;
+            if (item['user_type'] == 'EMS_Member') {
+              try {
+                var ref = await firebase.storage().ref("profile photo").child(item['email']).getDownloadURL().then(url => {
+                  URL = url;
+                });
+                item['photo'] = { uri: URL };
+                console.log("Success: Image Retrived From Database");
+              } catch (error) {
+                item['photo'] = { uri: "https://therminic2018.eu/wp-content/uploads/2018/07/dummy-avatar-300x300.jpg" };
+              }
+
+              setMemberList(memberList => [...memberList, item]);
+            }
+          }
+        });
+      });
+  }
+  const [getMembers, setGetMembers] = useState(() => {
+    memberListener();
+  })
 
   const makeAdminHandler = () => {
     Alert.alert("Are you sure?", "", [
       {
         text: "Yes",
         style: "cancel",
+        onPress: () => {
+          makeAdmin(memberSelected);
+          setIsMemberSelected(false);
+          if (memberList.length != 1) {
+            for (var i = 0; i < memberList.length; i++) {
+              if (memberList[i]['email'] == memberSelected['email']) {
+                memberList.splice(i, 1);
+                break;
+              }
+            }
+          }
+          else {
+            setMemberList([]);
+          }
+        }
       },
       {
         text: "No",
@@ -56,16 +93,33 @@ const AcceptRequestScreen = () => {
       {
         text: "Yes",
         style: "cancel",
+        onPress: () => {
+          removeMember(memberSelected);
+          setIsMemberSelected(false);
+          if (memberList.length != 1) {
+            for (var i = 0; i < memberList.length; i++) {
+              if (memberList[i]['email'] == memberSelected['email']) {
+                memberList.splice(i, 1);
+                break;
+              }
+            }
+          }
+          else {
+            setMemberList([]);
+          }
+        },
       },
       {
         text: "No",
         style: "cancel",
       },
     ]);
+
+
   };
 
-  const addMemberHandler = () => {
-    if (newMemberPassword !== newMemberConfirmPassword){
+  const addMemberHandler = async () => {
+    if (newMemberPassword !== newMemberConfirmPassword) {
       Alert.alert("Password do not match", "", [
         {
           text: "Okay",
@@ -73,11 +127,32 @@ const AcceptRequestScreen = () => {
         },
       ]);
     }
+    else {
+      let userProfile = {
+        email: newMemberEmail,
+        name: newMemberName,
+        phone: newMemberPhone,
+        user_type: "EMS_Member",
+      };
+      var dbReply = await addNewEmsMember(userProfile, newMemberPassword);
+
+      if (dbReply) {
+        setIsAddNewMember(false);
+      } else {
+        Alert.alert("Error: Email already in use", "", [
+          {
+            text: "Okay",
+            style: "cancel",
+          },
+        ]);
+      }
+    }
   }
 
   let content;
 
   if (isAddNewMember) {
+    // console.log()
     content = (
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
@@ -122,7 +197,7 @@ const AcceptRequestScreen = () => {
           </View>
           <TouchableOpacity
             style={{ alignItems: "center" }}
-            onPress={()=>setIsAddNewMember(false)}
+            onPress={() => setIsAddNewMember(false)}
           >
             <Text style={styles.signupText}>Cancel</Text>
           </TouchableOpacity>
