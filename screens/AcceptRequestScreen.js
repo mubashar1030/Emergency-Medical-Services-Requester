@@ -28,52 +28,9 @@ const AcceptRequestScreen = () => {
   const [requestSelected, setRequestSelected] = useState(null);
   let content;
 
-  const requestListener = () => {
-    let observer = db.collection('pending requests')
-      .onSnapshot(querySnapshot => {
-        querySnapshot.docChanges().forEach(change => {
-          if (change.type === 'added') {
-            // console.log('New Request: ', change.doc.data());
-            var item = change.doc.data();
-            let requestLst = currentRequests;
-            var valuePresent = false;
-            for (var i = 0; i < requestLst.length; i++) {
-              if (requestLst[i]['email'] == item['email']) {
-                valuePresent = true;
-                console.log(valuePresent);
-                break;
-              }
-            }
-            // console.log("listener add requestLst: ", requestLst);
-            // console.log("listener add item: ", item);
-            // console.log("listener add currentCrequests: ", currentRequests);
-            if (!valuePresent) {
-              setCurrentRequests(previousRequests => [...previousRequests, change.doc.data()]);
-            }
 
 
-          }
-          if (change.type === 'modified') {
-            console.log('Modified Request: ', change.doc.data());
-          }
-          if (change.type === 'removed') {
-            // console.log('Removed Request: ', change.doc.data());
-            let item = change.doc.data();
-            let requestLst = currentRequests;
-            for (var i = 0; i < currentRequests.length; i++) {
-              if (requestLst[i]['email'] == item['email']) {
-                requestLst.splice(i, 1);
-                break;
-              }
-            }
-            setCurrentRequests(requestLst);
-            console.log("listener: ", currentRequests)
 
-          }
-
-        });
-      });
-  }
 
   const updateRequester = () => {
     var ref = db.collection('pending requests').where('email', '==', requestSelected['email']);
@@ -83,11 +40,11 @@ const AcceptRequestScreen = () => {
       });
     });
     let memberDetails = getCurrentUser();
-    requesterAndMemberDetails = requestSelected;
+    let requesterAndMemberDetails = requestSelected;
     requesterAndMemberDetails['EMS Member Name'] = memberDetails['name'];
     requesterAndMemberDetails['EMS Member Email'] = memberDetails['email'];
     requesterAndMemberDetails['EMS Member Phone'] = memberDetails['phone'];
-    requesterAndMemberDetails['EMS Member Photo'] = {uri : photoUrlRetriver()};
+    requesterAndMemberDetails['EMS Member Photo'] = { uri: photoUrlRetriver() };
     requesterAndMemberDetails['dateTime Accepted'] = getTime();
     db.collection('servicing requests').add(requesterAndMemberDetails);
     db.collection('history').add(requesterAndMemberDetails);
@@ -95,7 +52,39 @@ const AcceptRequestScreen = () => {
 
   }
 
-  
+  const requestListener = () => {
+    let observer = db.collection('pending requests')
+      .onSnapshot(querySnapshot => {
+        querySnapshot.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            console.log("Update: New Request Detected")
+            setCurrentRequests(previousRequests => [...previousRequests, change.doc.data()]);
+          }
+          if (change.type === 'modified') {
+            console.log('Modified Request: ', change.doc.data());
+          }
+          if (change.type === 'removed') {
+            console.log("Update: A request was removed")
+            let item = change.doc.data();
+            if (item["email"] == auth.currentUser.email) {
+              setIsRequestAccepted(false);
+              let requestLst = currentRequests;
+              for (var i = 0; i < currentRequests.length; i++) {
+                if (requestLst[i]['email'] == item['email']) {
+                  requestLst.splice(i, 1);
+                  break;
+                }
+              }
+              setCurrentRequests(requestLst);
+            }
+          }
+
+        });
+      });
+  }
+
+  const [listener, setListener] = useState(() => { requestListener() });
+
 
   if (!isRequestAccepted) {
     if (currentRequests.length === 0) {
@@ -108,13 +97,8 @@ const AcceptRequestScreen = () => {
         </View>
       );
 
-      console.log("No requests: ", currentRequests);
-      //Listener 
-      requestListener();
-
     } else {
       if (!isRequestSelected) {
-
         content = (
           <View style={styles.container}>
             {/* <Text>aaa</Text> */}
@@ -331,7 +315,8 @@ const AcceptRequestScreen = () => {
             textStyle={{ fontSize: widthPercentageToDP("5%") }}
             onPress={() => {
               setIsRequestAccepted(false);
-              removeRequestFromServicing('EMS Member Email'); 
+              removeRequestFromServicing('EMS Member Email');
+              console.log("Update: EMS Member Ended Request")
             }}
           />
         </View>
@@ -348,7 +333,7 @@ const AcceptRequestScreen = () => {
     setIsRequestAccepted(true);
     setIsRequestSelected(false);
     setRequestAccepted(requestSelected);
-    updateRequester() // <<HERE
+    updateRequester()
   };
   const makeCall = (phoneNumber) => {
     const args = {
@@ -357,6 +342,7 @@ const AcceptRequestScreen = () => {
     };
     call(args).catch(console.error);
   };
+  
   return <View style={{ flex: 1 }}>{content}</View>;
 };
 

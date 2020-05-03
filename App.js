@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, YellowBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -12,6 +12,15 @@ import SignupScreen from './screens/SignupScreen'
 import RequesterScreen from "./screens/RequesterScreen.js";
 import EMSMemberScreen from './screens/EMSMemberScreen'
 import AdministratorScreen from './screens/AdministratorScreen'
+import _ from 'lodash';
+
+YellowBox.ignoreWarnings(['Setting a timer']);
+const _console = _.clone(console);
+console.warn = message => {
+  if (message.indexOf('Setting a timer') <= -1) {
+    _console.warn(message);
+  }
+};
 
 const Stack = createStackNavigator();
 

@@ -39,7 +39,8 @@ const GenerateRequestScreen = () => {
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestPermissionsAsync();
+      let { status } = await Location.requestPermissionsAsync()
+        .catch ( async () => {await Location.requestPermissionsAsync()});
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         console.log("hello");
@@ -97,12 +98,6 @@ const GenerateRequestScreen = () => {
               setEmsMemberDetails({name: item['EMS Member Name'], phone: item['EMS Member Phone'], photo: item['EMS Member Photo']});
               setIsRequestAccepted(true);
             }
-
-            // console.log("listener add requestLst: ", requestLst);
-            // console.log("listener add item: ", item);
-            // console.log("listener add currentCrequests: ", currentRequests);
-            
-
           }
           if (change.type === 'modified') {
             console.log('Modified Request: ', change.doc.data());
@@ -110,8 +105,10 @@ const GenerateRequestScreen = () => {
           if (change.type === 'removed') {
             // console.log('Removed Request: ', change.doc.data());
             let item = change.doc.data();
-            
-            console.log("listener: ")
+            if (item['email'] == auth.currentUser.email) {
+              setIsRequestGenerated(false);
+              return;
+            }
 
           }
 
@@ -135,6 +132,7 @@ const GenerateRequestScreen = () => {
     setIsRequestGenerated(false);
     setIsRequestAccepted(false);
     removeRequestFromServicing('email');
+    console.log('Update: Requester Ended Request');
 
   };
 
