@@ -17,6 +17,7 @@ import {
 import { signin } from "../components/dbComm";
 import * as Progress from "react-native-progress";
 import { database } from "firebase";
+import { CommonActions } from '@react-navigation/native';
 
 const LoginScreen = ({ route, navigation }) => {
   const [email, setemail] = useState("");
@@ -44,18 +45,42 @@ const LoginScreen = ({ route, navigation }) => {
         route.params.userType == "Requester" && (userInfo["user_type"] == "requester" || userInfo["user_type"] == "Admin" 
           || userInfo["user_type"] == "EMS_Member")
       ) {
-        navigation.navigate("RequesterScreen");
+        // navigation.navigate("RequesterScreen");
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              { name: "RequesterScreen" },
+            ],
+          })
+        );
       } else if (
         route.params.userType == "EMS Member" &&
         (userInfo["user_type"] == "EMS_Member" ||
           userInfo["user_type"] == "Admin")
       ) {
-        navigation.navigate("EMSMemberScreen");
+        // navigation.navigate("EMSMemberScreen");
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              { name: "EMSMemberScreen" },
+            ],
+          })
+        );
       } else if (
         route.params.userType == "Administrator" &&
         userInfo["user_type"] == "Admin"
       ) {
-        navigation.navigate("AdministratorScreen");
+        // navigation.navigate("AdministratorScreen");
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              { name: "AdministratorScreen" },
+            ],
+          })
+        );
       } else {
         Alert.alert("Login Error", "Incorrect Username and/or Password", [
           {
