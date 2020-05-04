@@ -31,6 +31,7 @@ import InfoText from "../components/InfoText";
 import { Content } from "native-base";
 import * as ImagePicker from "expo-image-picker";
 import { signup } from "../components/dbComm";
+import { CommonActions } from '@react-navigation/native';
 
 const SignupScreen = ({ route, navigation }) => {
   const [isNextPressed, setIsNextPressed] = useState(false);
@@ -91,7 +92,15 @@ const SignupScreen = ({ route, navigation }) => {
     setIsSigningUp(false);
 
     if (isValid) {
-      navigation.navigate("RequesterScreen");
+      // navigation.navigate("RequesterScreen");
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            { name: "RequesterScreen" },
+          ],
+        })
+      );
     } else {
       Alert.alert("Error: Email provided already in use or Incorrect ", "", [
         {
