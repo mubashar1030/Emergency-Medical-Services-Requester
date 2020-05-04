@@ -72,7 +72,7 @@ async function signup(userProfile, Password, uri) {
             console.log("Error: Image Upload Unsuccessful");
             console.log(error);
         })
-
+    imageURL = await downloadPhoto();
     console.log("Success: New User Created")
     return 1;
 };
@@ -115,7 +115,7 @@ const uploadImage = async (uri, imageName) => {
         const blob = await response.blob();
         var user = auth.currentUser;
         var ref = firebase.storage().ref().child("profile photo/" + user.email);
-        ref.put(blob);
+        await ref.put(blob);
 
         console.log("Success: Image Upload Complete")
     }
