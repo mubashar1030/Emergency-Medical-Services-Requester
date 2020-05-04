@@ -16,10 +16,11 @@ import MyButton from "../components/MyButton";
 import * as ImagePicker from 'expo-image-picker';
 import { photoUrlRetriver, updatePhoto, getName, getPhone, updatePhoneDB } from '../components/dbComm';
 import { auth, db, firebase } from '../components/ApiInfo';
+import { CommonActions } from '@react-navigation/native';
 
 
 
-const SettingScreen = () => {
+const SettingScreen = ({ route, navigation }) => {
   const [isEditPressed, setIsEditPressed] = useState(false);
   const [phone, setPhone] = useState(getPhone());
   const [picture, setPicture] = useState({ uri: photoUrlRetriver() });
@@ -50,6 +51,18 @@ const SettingScreen = () => {
     setIsEditPressed(false)
     updatePhoneDB(phone);
 
+  }
+
+  const logoutHandler = () =>{
+    // navigation.navigate('UserTypeScreen')
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          { name: "UserTypeScreen" },
+        ],
+      })
+    );
   }
 
   let phoneComponent;
@@ -146,7 +159,7 @@ const SettingScreen = () => {
             }}
             text="Log Out"
             textStyle={{ ...styles.uploadPhotoText, color: Colors.tertiary }}
-            onPress={() => setIsEditPressed(false)}
+            onPress={() => logoutHandler()}
           />
         </View>
       </View>
