@@ -313,7 +313,6 @@ const AcceptRequestScreen = () => {
         </View>
         <FlatList
           data={memberList}
-          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.card}
