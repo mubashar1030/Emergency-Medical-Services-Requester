@@ -52,6 +52,22 @@ const AcceptRequestScreen = () => {
 
   }
 
+  const requestEndListener = () => {
+    let observer = db.collection('servicing requests')
+      .onSnapshot(querySnapshot => {
+        querySnapshot.docChanges().forEach(change => {
+          if (change.type === 'removed') {
+            // console.log('Removed Request: ', change.doc.data());
+            let item = change.doc.data();
+            if (item['EMS Member Email'] == auth.currentUser.email) {
+              setIsRequestAccepted(false);
+              return;
+            }
+          }
+        });
+      });
+  }
+
   const requestListener = () => {
     let observer = db.collection('pending requests')
       .onSnapshot(querySnapshot => {
@@ -66,17 +82,14 @@ const AcceptRequestScreen = () => {
           if (change.type === 'removed') {
             console.log("Update: A request was removed")
             let item = change.doc.data();
-            if (item["email"] == auth.currentUser.email) {
-              setIsRequestAccepted(false);
-              let requestLst = currentRequests;
-              for (var i = 0; i < currentRequests.length; i++) {
-                if (requestLst[i]['email'] == item['email']) {
-                  requestLst.splice(i, 1);
-                  break;
-                }
+            let requestLst = currentRequests;
+            for (var i = 0; i < currentRequests.length; i++) {
+              if (requestLst[i]['email'] == item['email']) {
+                requestLst.splice(i, 1);
+                break;
               }
-              setCurrentRequests(requestLst);
             }
+            setCurrentRequests(requestLst);
           }
 
         });
@@ -333,7 +346,8 @@ const AcceptRequestScreen = () => {
     setIsRequestAccepted(true);
     setIsRequestSelected(false);
     setRequestAccepted(requestSelected);
-    updateRequester()
+    updateRequester();
+    requestEndListener();
   };
   const makeCall = (phoneNumber) => {
     const args = {
