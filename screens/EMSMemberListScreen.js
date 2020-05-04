@@ -19,12 +19,14 @@ import Photo from "../components/Photo";
 import InfoText from "../components/InfoText";
 import { auth, db, firebase } from '../components/ApiInfo';
 import { addNewEmsMember, removeMember, makeAdmin } from "../components/dbComm";
+import * as Progress from "react-native-progress";
 
 const AcceptRequestScreen = () => {
   const [isAddNewMember, setIsAddNewMember] = useState(false);
   const [isMemberSelected, setIsMemberSelected] = useState(false);
   const [memberSelected, setMemberSelected] = useState(null);
   const [memberList, setMemberList] = useState([]);
+  const [isAddingMemberOverlay,setIsAddingMemberOverlay] = useState(false);
 
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberEmail, setNewMemberEmail] = useState('');
@@ -134,7 +136,9 @@ const AcceptRequestScreen = () => {
         phone: newMemberPhone,
         user_type: "EMS_Member",
       };
+      setIsAddingMemberOverlay(true);
       var dbReply = await addNewEmsMember(userProfile, newMemberPassword);
+      setIsAddingMemberOverlay(false);
 
       if (dbReply) {
         setIsAddNewMember(false);
@@ -148,6 +152,21 @@ const AcceptRequestScreen = () => {
       }
     }
   }
+
+  // The below condition brings up an overlay when new EMS member information
+  // is being verfying by database.
+  let addingMemberOverlay;
+  if (isAddingMemberOverlay) {
+    addingMemberOverlay = (
+      <View style={styles.addingMemberOverlayContainer}>
+        <Progress.Bar indeterminate width={200} color={Colors.secondary} />
+        <Text style={{ ...styles.signupText, paddingTop: "2%" }}>
+          Working on it...
+        </Text>
+      </View>
+    );
+  }
+
 
   let content;
 
@@ -202,6 +221,7 @@ const AcceptRequestScreen = () => {
             <Text style={styles.signupText}>Cancel</Text>
           </TouchableOpacity>
         </View>
+        {addingMemberOverlay}
       </ScrollView>
     );
   } else if (isMemberSelected) {
@@ -335,13 +355,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    // justifyContent: "center",
+    justifyContent: "center",
     backgroundColor: Colors.tertiary,
   },
   scrollContainer: {
-    paddingVertical: heightPercentageToDP("10%"),
+    // paddingVertical: heightPercentageToDP("10%"),
     alignItems: "center",
     justifyContent: "center",
+    flexGrow: 1
   },
   titleContainer: {
     width: "90%", //widthPercentageToDP("90%"),
@@ -439,6 +460,16 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     fontSize: 25,
     color: Colors.secondary,
+  },
+  addingMemberOverlayContainer: {
+    elevation: 10,
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: Colors.tertiary,
+    opacity: 0.8,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
