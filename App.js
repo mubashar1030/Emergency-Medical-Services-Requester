@@ -39,7 +39,7 @@ export default function App() {
   if (fontsLoaded) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="UserTypeScreen">
+        <Stack.Navigator initialRouteName="SplashScreen">
         <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
