@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Colors from "./constants/colors.js";
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
+import SplashScreen from "./screens/SplashScreen.js";
 import UserTypeScreen from "./screens/UserTypeScreen.js";
 import LoginScreen from "./screens/LoginScreen.js";
 import SignupScreen from './screens/SignupScreen'
@@ -39,6 +40,13 @@ export default function App() {
     return (
       <NavigationContainer>
         <Stack.Navigator initialRouteName="UserTypeScreen">
+        <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+            options={{
+              headerShown: false
+            }}
+          />
           <Stack.Screen
             name="UserTypeScreen"
             component={UserTypeScreen}
