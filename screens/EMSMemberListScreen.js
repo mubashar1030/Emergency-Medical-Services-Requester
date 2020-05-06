@@ -128,6 +128,20 @@ const AcceptRequestScreen = () => {
           style: "cancel",
         },
       ]);
+    }  else if (newMemberPassword.length < 6) {
+      Alert.alert("Password length should be atleast six", "", [
+        {
+          text: "Okay",
+          style: "cancel",
+        },
+      ]);
+    } else if (newMemberPhone.length!==11 || newMemberPhone.match(/[0-9]/g).length!==11) {
+      Alert.alert("Please enter a valid phone number", "", [
+        {
+          text: "Okay",
+          style: "cancel",
+        },
+      ]);
     }
     else {
       let userProfile = {
@@ -191,16 +205,17 @@ const AcceptRequestScreen = () => {
             </View>
             <View style={styles.inputContainer}>
               <TextInput
-                placeholder="Phone"
+                placeholder="Phone (e.g 03213456789)"
                 onChangeText={(text) => setNewMemberPhone(text)}
                 autoCapitalize="none"
               />
             </View>
             <View style={styles.inputContainer}>
               <TextInput
-                placeholder="Password"
+                placeholder="Password (atleast 6 characters)"
                 onChangeText={(text) => setNewMemberPassword(text)}
                 autoCapitalize="none"
+                secureTextEntry={true}
               />
             </View>
             <View style={styles.inputContainer}>
@@ -208,6 +223,7 @@ const AcceptRequestScreen = () => {
                 placeholder="Confirm Password"
                 onChangeText={(text) => setNewMemberConfirmPassword(text)}
                 autoCapitalize="none"
+                secureTextEntry={true}
               />
             </View>
           </View>
@@ -313,6 +329,7 @@ const AcceptRequestScreen = () => {
         </View>
         <FlatList
           data={memberList}
+          keyExtractor={(item) => item.email}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.card}
