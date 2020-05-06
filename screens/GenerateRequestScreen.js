@@ -220,7 +220,7 @@ const GenerateRequestScreen = () => {
               style={styles.photo}
             />
           </View> */}
-          <Photo photo={emsMemberDetails['photo']} photoContainerStyle={{ marginTop: '20%' }} />
+          <Photo photo={emsMemberDetails['photo']} photoContainerStyle={{ marginTop: '10%' }} photoStyle={styles.photo}/>
           <View
             style={{
               ...styles.waitingTextContainer,
@@ -277,14 +277,14 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP("5%"),
     borderRadius: widthPercentageToDP("7%"),
     width: widthPercentageToDP("90%"),
-    height: heightPercentageToDP("60%"),
+    height: '70%',//heightPercentageToDP("60%"),
     elevation: 2,
     overflow: "hidden",
     backgroundColor: Colors.tertiary,
   },
   map: {
-    width: widthPercentageToDP("90%"),
-    height: heightPercentageToDP("60%"),
+    width: '100%',//,widthPercentageToDP("90%"),
+    height: '100%',//heightPercentageToDP("60%"),
     borderRadius: widthPercentageToDP("7%"),
   },
   buttonContainer: {
@@ -354,8 +354,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.tertiary
   },
   photo: {
-    width: widthPercentageToDP("50%"),
-    height: widthPercentageToDP("50%"),
+    width: widthPercentageToDP("40%"),
+    height: widthPercentageToDP("40%"),
     resizeMode: "contain",
   },
   infoTextContainer: {

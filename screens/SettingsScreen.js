@@ -184,14 +184,16 @@ const styles = StyleSheet.create({
   },
   photoContainer: {
     flexDirection: "row",
-    marginTop: '25%',//heightPercentageToDP("15%"),
+    marginTop: '15%',//heightPercentageToDP("15%"),
     alignItems: "center",
     width: widthPercentageToDP("85%"),
     justifyContent: "space-between",
+    height: '30%',
+    // backgroundColor: 'red'
   },
   uploadPhotoButton: {
     width: widthPercentageToDP("37%"),
-    height: heightPercentageToDP("6%"),
+    height: '35%',//heightPercentageToDP("6%"),
     backgroundColor: Colors.tertiary,
   },
   photo: {
@@ -204,8 +206,8 @@ const styles = StyleSheet.create({
     color: Colors.secondary,
   },
   infoContainer: {
-    marginTop: heightPercentageToDP("5%"),
-    height: heightPercentageToDP("30%"),
+    marginTop: '5%',//heightPercentageToDP("5%"),
+    height: '35%',//heightPercentageToDP("30%"),
     width: widthPercentageToDP("90%"),
     elevation: 4,
     borderRadius: widthPercentageToDP("7%"),
@@ -216,7 +218,7 @@ const styles = StyleSheet.create({
   },
   info: {
     width: "100%",
-    height: heightPercentageToDP("5%"),
+    height: '23%',//heightPercentageToDP("5%"),
     borderBottomWidth: 1,
     alignItems: "center",
     paddingHorizontal: widthPercentageToDP("2.5%"),
