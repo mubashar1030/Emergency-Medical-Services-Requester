@@ -167,6 +167,7 @@ const LoginScreen = ({ route, navigation }) => {
               placeholder="Password"
               onChangeText={(text) => setPassword(text)}
               autoCapitalize="none"
+              secureTextEntry={true}
             />
           </View>
         </View>
