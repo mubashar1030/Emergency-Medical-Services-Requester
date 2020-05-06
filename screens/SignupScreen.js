@@ -57,6 +57,13 @@ const SignupScreen = ({ route, navigation }) => {
           style: "cancel",
         },
       ]);
+    } else if (newPassword.length < 6) {
+      Alert.alert("Password length should be atleast six", "", [
+        {
+          text: "Okay",
+          style: "cancel",
+        },
+      ]);
     } else {
       setIsNextPressed(true);
     }
@@ -79,36 +86,54 @@ const SignupScreen = ({ route, navigation }) => {
 
   const signupHandler = async () => {
     console.log("Sign Up Finish Pressed.");
-
-    let userProfile = {
-      email: newEmail || "",
-      user_type: "requester",
-      phone: newPhone,
-      name: newName,
-    };
-
-    setIsSigningUp(true);
-    let isValid = await signup(userProfile, newPassword, picture.uri);
-    setIsSigningUp(false);
-
-    if (isValid) {
-      // navigation.navigate("RequesterScreen");
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [
-            { name: "RequesterScreen" },
-          ],
-        })
-      );
-    } else {
-      Alert.alert("Error: Email provided already in use or Incorrect ", "", [
+    if (newPhone.length!==11 || newPhone.match(/[0-9]/g).length!==11) {
+      Alert.alert("Please enter a valid phone number", "", [
         {
           text: "Okay",
           style: "cancel",
         },
       ]);
+    } else {
+      let userProfile = {
+        email: newEmail || "",
+        user_type: "requester",
+        phone: newPhone,
+        name: newName,
+      };
+  
+      setIsSigningUp(true);
+      let isValid = await signup(userProfile, newPassword, picture.uri);
+      setIsSigningUp(false);
+  
+      if (isValid) {
+        // navigation.navigate("RequesterScreen");
+        try {
+          await AsyncStorage.setItem('userId', newEmail);
+          await AsyncStorage.setItem('userProfile', 'Requester');
+        } catch (error) {
+          // Error setting data
+          console.log('error setting data')
+          console.log(error.message);
+        }
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              { name: "RequesterScreen" },
+            ],
+          })
+        );
+      } else {
+        Alert.alert("Error: Email provided already in use or Incorrect ", "", [
+          {
+            text: "Okay",
+            style: "cancel",
+          },
+        ]);
+      }
+
     }
+
   };
 
   // The below condition brings up a signing you up overlay when user information
@@ -159,10 +184,11 @@ const SignupScreen = ({ route, navigation }) => {
             </View> */}
             <View style={styles.inputContainer}>
               <TextInput
-                placeholder="Password"
+                placeholder="Password (atleast 6 characters)"
                 onChangeText={(text) => setNewPassword(text)}
                 autoCapitalize="none"
                 defaultValue={newPassword}
+                secureTextEntry={true}
               />
             </View>
             <View style={styles.inputContainer}>
@@ -171,6 +197,7 @@ const SignupScreen = ({ route, navigation }) => {
                 onChangeText={(text) => setNewConfirmPassword(text)}
                 autoCapitalize="none"
                 defaultValue={newConfirmPassword}
+                secureTextEntry={true}
               />
             </View>
           </View>
@@ -206,7 +233,7 @@ const SignupScreen = ({ route, navigation }) => {
         >
           <View style={{ ...styles.inputContainer, height: "45%" }}>
             <TextInput
-              placeholder="Phone"
+              placeholder="Phone (e.g 03213456789)"
               onChangeText={(text) => setNewPhone(text)}
               defaultValue={newPhone}
               autoCapitalize="none"
