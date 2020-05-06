@@ -247,6 +247,34 @@ const makeAdmin = async (memberToPromote) => {
     });
 }
 
+const sendNewRequestNotification = async () => {
+    var ref = await db.collection('users').where("user_type", '==', 'EMS_Member');
+    // console.log('EMS Members' + ref.get())
+    ref.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            // var seen = [];
+            // JSON.stringify(doc, function(key, val) {
+            //     if (val != null && typeof val == "object") {
+            //          if (seen.indexOf(val) >= 0) {
+            //              return;
+            //          }
+            //          seen.push(val);
+            //      }
+            //      return val;
+            //  })
+             console.log('EMS Members '+doc.data()['name'])
+        });
+    });
+}
+
+const getSavedUser = async (userId) => {
+    CurrentEmail = userId;
+    CurrentUser = await get_user(userId);
+    console.log('returning', CurrentUser);
+    imageURL = await downloadPhoto();
+    return CurrentUser;
+};
+
 export {
     signup,
     signin,
@@ -264,4 +292,6 @@ export {
     addNewEmsMember,
     removeMember,
     makeAdmin,
+    sendNewRequestNotification,
+    getSavedUser,
 }
