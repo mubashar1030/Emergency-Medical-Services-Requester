@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   ScrollView,
+  AsyncStorage
 } from "react-native";
 import Colors from "../constants/colors.js";
 import {
@@ -53,8 +54,15 @@ const SettingScreen = ({ route, navigation }) => {
 
   }
 
-  const logoutHandler = () =>{
+  const logoutHandler = async () =>{
     // navigation.navigate('UserTypeScreen')
+    try {
+      await AsyncStorage.setItem('userId', 'none');
+      await AsyncStorage.setItem('userProfile', 'none');
+    } catch (error) {
+      // Error setting data
+      console.log(error.message);
+    }
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
