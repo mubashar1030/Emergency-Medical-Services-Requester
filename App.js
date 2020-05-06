@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, YellowBox } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, YellowBox, Alert } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -14,6 +14,7 @@ import RequesterScreen from "./screens/RequesterScreen.js";
 import EMSMemberScreen from './screens/EMSMemberScreen'
 import AdministratorScreen from './screens/AdministratorScreen'
 import _ from 'lodash';
+import * as Network from 'expo-network';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -32,6 +33,36 @@ const getFont = () =>
 
 export default function App() {
   const [fontsLoaded, setfontsLoaded] = useState(false);
+
+  const checkNetworkState = () => {
+    Network.getNetworkStateAsync().then(res => {
+      // console.log('check')
+      if (!res.isInternetReachable){
+        Alert.alert("Network Error", "No internet Connection", [
+          {
+            text: "Try Again!",
+            style: "cancel",
+            onPress: ()=>checkNetworkState()
+          },
+        ]);
+      }
+      else {
+        setTimeout(()=>{checkNetworkState()}, 3000)
+        
+      }
+    }).catch(()=>{
+      
+      Alert.alert("Network Error", "No internet Connection", [
+        {
+          text: "Try Again!",
+          style: "cancel",
+          onPress: ()=>checkNetworkState()
+        },
+      ]);
+    })
+  }
+
+  useEffect(()=> {checkNetworkState()},[])
 
   // Since fonts are loaded asynchronously the below condition checks if
   // fonts are loaded and only starts the app once the fonts are loaded so
