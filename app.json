@@ -7,12 +7,10 @@
       "android",
       "web"
     ],
-    "version": "1.0.3",
+    "version": "2.0.1",
     "orientation": "portrait",
     "icon": "./assets/logo-icon.png",
     "splash": {
-      "image": "./assets/logo.png",
-      "resizeMode": "contain",
       "backgroundColor": "#f4f4f4"
     },
     "updates": {
