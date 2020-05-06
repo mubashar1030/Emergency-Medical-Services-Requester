@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  AsyncStorage
 } from "react-native";
 import Colors from "../constants/colors.js";
 import {
@@ -46,6 +47,14 @@ const LoginScreen = ({ route, navigation }) => {
           || userInfo["user_type"] == "EMS_Member")
       ) {
         // navigation.navigate("RequesterScreen");
+        try {
+          await AsyncStorage.setItem('userId', email);
+          await AsyncStorage.setItem('userProfile', route.params.userType);
+        } catch (error) {
+          // Error setting data
+          console.log('error setting data')
+          console.log(error.message);
+        }
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -60,6 +69,14 @@ const LoginScreen = ({ route, navigation }) => {
           userInfo["user_type"] == "Admin")
       ) {
         // navigation.navigate("EMSMemberScreen");
+        try {
+          await AsyncStorage.setItem('userId', email);
+          await AsyncStorage.setItem('userProfile', route.params.userType);
+        } catch (error) {
+          // Error setting data
+          console.log('error setting data')
+          console.log(error.message);
+        }
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -73,6 +90,14 @@ const LoginScreen = ({ route, navigation }) => {
         userInfo["user_type"] == "Admin"
       ) {
         // navigation.navigate("AdministratorScreen");
+        try {
+          await AsyncStorage.setItem('userId', email);
+          await AsyncStorage.setItem('userProfile', route.params.userType);
+        } catch (error) {
+          // Error setting data
+          console.log('error setting data')
+          console.log(error.message);
+        }
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
