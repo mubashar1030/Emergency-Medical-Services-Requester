@@ -23,6 +23,7 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "package": "com.cs360.emsr",
       "versionCode": 1,
       "config": {

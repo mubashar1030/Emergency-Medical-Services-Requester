@@ -18,9 +18,9 @@ import MyButton from "../components/MyButton";
 import Photo from '../components/Photo'
 import * as Progress from "react-native-progress";
 import call from "react-native-phone-call";
-import { updateRequestDB, removeRequestFromServicing } from '../components/dbComm';
+import { updateRequestDB, removeRequestFromServicing, sendPushNotification } from '../components/dbComm';
 import { auth, db, firebase } from '../components/ApiInfo';
-
+import { registerForPushNotificationsAsync } from '../components/PushNotification';
 
 const GenerateRequestScreen = () => {
   const [location, setLocation] = useState(null);
@@ -36,6 +36,9 @@ const GenerateRequestScreen = () => {
   const [isRequestAccepted, setIsRequestAccepted] = useState(false);
   const [emergencyDetails, setEmergencyDetails] = useState("");
   const [emsMemberDetails, setEmsMemberDetails] = useState({name: '', phone: '', photo: {}});
+  const [componentDidMount, setComponentDidMount] = useState( () => {
+    registerForPushNotificationsAsync();
+  });
 
   useEffect(() => {
     (async () => {
@@ -125,6 +128,7 @@ const GenerateRequestScreen = () => {
     setIsRequestAccepted(false);
     updateRequestDB(region, emergencyDetails);
     acceptanceListener();
+    sendPushNotification();
   };
 
   const onEndRequestHandler = () => {

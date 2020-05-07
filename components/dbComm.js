@@ -57,8 +57,8 @@ async function signup(userProfile, Password, uri) {
     }
 
     let response = await auth.createUserWithEmailAndPassword(userProfile['email'], Password)
-        .then( () => {return true;})
-        .catch ( () => {return false;} );
+        .then(() => { return true; })
+        .catch(() => { return false; });
     if (!response) {
         return response;
     }
@@ -262,7 +262,7 @@ const sendNewRequestNotification = async () => {
             //      }
             //      return val;
             //  })
-             console.log('EMS Members '+doc.data()['name'])
+            console.log('EMS Members ' + doc.data()['name'])
         });
     });
 }
@@ -274,6 +274,77 @@ const getSavedUser = async (userId) => {
     imageURL = await downloadPhoto();
     return CurrentUser;
 };
+
+const storeToken = async (token) => {
+    try {
+        var ref = await db.collection('users').where("email", '==', CurrentEmail);
+        CurrentUser['push_token'] = token
+        ref.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                doc.ref.set(CurrentUser);
+            });
+        });
+        console.log("Success: new token saved in database")
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const sendPushNotification = async () => {
+    try {
+        let textBody = CurrentUser['name'] + " needs your help!";
+        var ref = await db.collection('users').where("user_type", '==', "EMS_Member");
+        ref.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                let token = doc.data()['push_token']
+                let response = fetch('https://exp.host/--/api/v2/push/send', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: token,
+                        sound: 'default',
+                        title: 'New Request!',
+                        body: textBody
+                    })
+                })
+            });
+        });
+        console.log("Success: new token saved in database")
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const pushNotificaionRequester = async (id) => {
+    try {
+        let textBody = CurrentUser['name'] + " is on his way!";
+        var ref = await db.collection('users').where("email", '==', id);
+        ref.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                let token = doc.data()['push_token'];
+                let response = fetch('https://exp.host/--/api/v2/push/send', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: token,
+                        sound: 'default',
+                        title: 'Hold On!',
+                        body: textBody
+                    })
+                })
+            });
+        });
+
+    } catch(error) {
+        console.log("Error: push notificaion to Requester not sent")
+    }
+}
 
 export {
     signup,
@@ -294,4 +365,7 @@ export {
     makeAdmin,
     sendNewRequestNotification,
     getSavedUser,
+    storeToken,
+    sendPushNotification,
+    pushNotificaionRequester,
 }
