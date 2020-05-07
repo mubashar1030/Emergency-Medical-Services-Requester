@@ -7,7 +7,7 @@
       "android",
       "web"
     ],
-    "version": "2.0.1",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo-icon.png",
     "splash": {
@@ -24,7 +24,7 @@
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "package": "com.cs360.emsr",
+      "package": "com.LUMS.EMSR",
       "versionCode": 1,
       "config": {
         "googleMaps": {
