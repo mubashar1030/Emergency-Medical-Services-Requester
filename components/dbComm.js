@@ -221,6 +221,7 @@ const updateRequestDB = (region, emergencyDetails) => {
         name: CurrentUser['name'],
         email: CurrentUser['email'],
         phone: CurrentUser['phone'],
+        id: (Math.floor(Math.random() * 1000000)).toString(),
         emergencyDetails: emergencyDetails,
         photo: { uri: photoUrlRetriver() },
         latitude: region['latitude'],
@@ -248,6 +249,16 @@ const removeRequestFromServicing = (userType) => {
         });
     });
 }
+
+const removeRequestFromPending = () => {
+    var ref = db.collection('pending requests').where('email', '==', auth.currentUser.email);
+    ref.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            doc.ref.delete();
+        });
+    });
+}
+
 
 // This function is called when an Administrator removes an EMS Member.
 const removeMember = async (memberToRemove) => {
@@ -352,7 +363,7 @@ const pushNotificaionRequester = async (id) => {
             });
         });
 
-    } catch(error) {
+    } catch (error) {
         console.log("Error: push notificaion to Requester not sent")
     }
 }
@@ -378,4 +389,5 @@ export {
     storeToken,
     sendPushNotification,
     pushNotificaionRequester,
+    removeRequestFromPending,
 }

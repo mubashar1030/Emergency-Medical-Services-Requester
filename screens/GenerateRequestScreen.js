@@ -22,6 +22,7 @@ import {
   updateRequestDB,
   removeRequestFromServicing,
   sendPushNotification,
+  removeRequestFromPending,
 } from "../components/dbComm";
 import { auth, db, firebase } from "../components/ApiInfo";
 import { registerForPushNotificationsAsync } from "../components/PushNotification";
@@ -46,9 +47,20 @@ const GenerateRequestScreen = () => {
     phone: "",
     photo: {},
   });
-  const [componentDidMount, setComponentDidMount] = useState(() => {
+  const [PushNotification, setPushNotification] = useState(() => {
     registerForPushNotificationsAsync();
   });
+  const [checkIfRequestExists, setCheckIfRequestExists] = useState(() => {
+    var ref = db
+      .collection("pending requests")
+      .where("email", "==", auth.currentUser.email);
+    ref.get().then(function (querySnapshot) {
+      querySnapshot.forEach(function (doc) {
+        setIsRequestGenerated(true);
+        setIsRequestAccepted(false);
+      });
+    });
+  })
 
   useEffect(() => {
     (async () => {
@@ -135,13 +147,17 @@ const GenerateRequestScreen = () => {
       });
   };
 
+  const [listener, setListener] = useState(() => {
+    acceptanceListener();
+  })
+
   const onRequestEMSPressHandler = () => {
     console.log(emergencyDetails);
     setShowMap(true);
     setIsRequestGenerated(true);
     setIsRequestAccepted(false);
     updateRequestDB(region, emergencyDetails);
-    acceptanceListener();
+    // acceptanceListener();
     sendPushNotification();
   };
 
@@ -218,6 +234,7 @@ const GenerateRequestScreen = () => {
               onPress={() => {
                 setShowMap(true);
                 setIsRequestGenerated(false);
+                removeRequestFromPending();
               }}
               text="Cancel"
             />

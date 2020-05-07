@@ -37,6 +37,22 @@ const AcceptRequestScreen = () => {
   const [requestSelected, setRequestSelected] = useState(null);
   let content;
 
+  const [checkInPending, setCheckInPending] = useState(() => {
+    var ref = db
+      .collection("servicing requests")
+      .where("EMS Member Email", "==", auth.currentUser.email);
+    ref.get().then(function (querySnapshot) {
+      querySnapshot.forEach(function (doc) {
+        setRequestAccepted(doc.data());
+        setRequestSelected(doc.data());
+        console.log(doc.data());
+        setIsRequestAccepted(true);
+        setIsRequestSelected(false);
+        requestEndListener();
+      });
+    });
+  });
+
   // This function updates the requester once his request has be accepted.
   const updateRequester = () => {
     var ref = db
@@ -75,6 +91,7 @@ const AcceptRequestScreen = () => {
             let item = change.doc.data();
             if (item["EMS Member Email"] == auth.currentUser.email) {
               setIsRequestAccepted(false);
+              // console.log('>>>>>>>>>>>>>>>>>>>>>>> ', currentRequests)
               return;
             }
           }
@@ -82,42 +99,10 @@ const AcceptRequestScreen = () => {
       });
   };
 
-  // This function listens for changes request list.
-  const requestListener = () => {
-    let observer = db
-      .collection("pending requests")
-      .onSnapshot((querySnapshot) => {
-        querySnapshot.docChanges().forEach((change) => {
-          if (change.type === "added") {
-            console.log("Update: New Request Detected");
-            setCurrentRequests((previousRequests) => [
-              ...previousRequests,
-              change.doc.data(),
-            ]);
-          }
-          if (change.type === "modified") {
-            console.log("Modified Request: ", change.doc.data());
-          }
-          if (change.type === "removed") {
-            console.log("Update: A request was removed");
-            let item = change.doc.data();
-            let requestLst = currentRequests;
-            for (var i = 0; i < currentRequests.length; i++) {
-              if (requestLst[i]["email"] == item["email"]) {
-                requestLst.splice(i, 1);
-                break;
-              }
-            }
-            setCurrentRequests(requestLst);
-          }
-        });
-      });
-  };
 
-  const [listener, setListener] = useState(() => {
-    requestListener();
-  });
-  const [componentDidMount, setComponentDidMount] = useState(() => {
+
+
+  const [pushNotificaiton, setpushNotificaiton] = useState(() => {
     registerForPushNotificationsAsync();
   });
 
@@ -148,7 +133,7 @@ const AcceptRequestScreen = () => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.card}
-                  onPress={() => viewRequestHandler(item)}
+                  onPress={() => { viewRequestHandler(item); console.log(currentRequests.length) }}
                 >
                   <View>
                     <Photo photo={item.photo} photoStyle={styles.photo} />
@@ -354,8 +339,10 @@ const AcceptRequestScreen = () => {
             textStyle={{ fontSize: widthPercentageToDP("5%") }}
             onPress={() => {
               setIsRequestAccepted(false);
+              // setIsRequestSelected(false);
               removeRequestFromServicing("EMS Member Email");
               console.log("Update: EMS Member Ended Request");
+              // console.log("After End: ", currentRequests);
             }}
           />
         </View>
@@ -364,9 +351,10 @@ const AcceptRequestScreen = () => {
   }
 
   const viewRequestHandler = (item) => {
-    setIsRequestSelected(true);
     setRequestSelected(item);
+    setIsRequestSelected(true);
     console.log(item.id);
+
   };
   const acceptRequestHandler = () => {
     setIsRequestAccepted(true);
@@ -382,6 +370,50 @@ const AcceptRequestScreen = () => {
     };
     call(args).catch(console.error);
   };
+
+
+
+  // This function listens for changes request list.
+  const requestListener = async () => {
+    console.log("Before Addition: ", currentRequests);
+    var requestLst = []
+    let observer = db
+      .collection("pending requests")
+      .onSnapshot((querySnapshot) => {
+        querySnapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            console.log("Update: New Request Detected");
+            requestLst.push(change.doc.data());
+            setCurrentRequests((previousRequests) => [
+              ...previousRequests,
+              change.doc.data(),
+            ]);
+            console.log("After Addition: ", requestLst);
+            setCurrentRequests(requestLst);
+
+          }
+          if (change.type === "modified") {
+            console.log("Modified Request: ", change.doc.data());
+          }
+          if (change.type === "removed") {
+            console.log("Update: A request was removed");
+            console.log("after removal:    ", currentRequests);
+            let item = change.doc.data();
+            for (var i = 0; i < requestLst.length; i++) {
+              if (requestLst[i]["email"] == item["email"]) {
+                requestLst.splice(i, 1);
+              }
+            }
+            console.log("requstLst: ", requestLst);
+            setCurrentRequests(requestLst);
+          }
+        });
+      });
+  };
+
+  const [listener, setListener] = useState(() => {
+    requestListener();
+  });
 
   return <View style={{ flex: 1 }}>{content}</View>;
 };
