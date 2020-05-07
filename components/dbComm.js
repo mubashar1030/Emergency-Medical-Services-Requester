@@ -188,8 +188,8 @@ const getTime = () => {
     let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
     let year = date_ob.getFullYear();
 
-    let hours = date_ob.getHours() % 12;
-    let minutes = date_ob.getMinutes();
+    let hours = ("0" + date_ob.getHours()).slice(-2);
+    let minutes = ("0" + date_ob.getMinutes()).slice(-2);
 
 
     let currenttime = hours + ":" + minutes + " " + date + "-" + month + "-" + year;
