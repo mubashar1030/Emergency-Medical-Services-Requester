@@ -4,6 +4,9 @@ let CurrentEmail = '';
 let CurrentUser = null;
 let imageURL = '';
 
+// Checks with the databse if the user trying to login/sign up is valid.
+// Validity is based on whether the user exists in the database and if the 
+//  entered email on sign up is a valid one.
 async function is_valid_user(Email, Password) {
     console.log("valid user")
     let isValid = true;
@@ -15,6 +18,7 @@ async function is_valid_user(Email, Password) {
     return isValid;
 }
 
+// Retrives the user's details after he/she has been authenticated.
 async function get_user(userID) {
     console.log("get user")
     let snapshot = null
@@ -41,6 +45,8 @@ async function get_user(userID) {
     }
 }
 
+// This function uses the sign up details enetered by the user and
+//  saves them in the database.
 async function signup(userProfile, Password, uri) {
     if (userProfile === undefined || Password === undefined)
         return 0;
@@ -77,6 +83,8 @@ async function signup(userProfile, Password, uri) {
     return 1;
 };
 
+// This function uses the the details input by an administrator to create a new 
+//  EMS Member account.
 async function addNewEmsMember(userProfile, Password) {
     if (userProfile === undefined || Password === undefined)
         return 0;
@@ -96,6 +104,7 @@ async function addNewEmsMember(userProfile, Password) {
     return 1;
 };
 
+// This is the initial function that is called by the 'LoginScreen' page
 const signin = async (Email, Password) => {
     console.log("Sign In Requested")
     let verify = await is_valid_user(Email, Password);
@@ -109,6 +118,7 @@ const signin = async (Email, Password) => {
     return CurrentUser;
 };
 
+"This function is used to upload the user's photo to the firebase storage"
 const uploadImage = async (uri, imageName) => {
     try {
         const response = await fetch(uri);
@@ -126,6 +136,7 @@ const uploadImage = async (uri, imageName) => {
     return
 }
 
+// This function retrives the user's photo from the firebase storage.
 const downloadPhoto = async () => {
     var URL;
     try {
@@ -142,14 +153,18 @@ const downloadPhoto = async () => {
     return URL;
 }
 
+// This function is used by other pages to retrive the URL of the already downloaded url of the
+//  user's photo for quick access. 
 const photoUrlRetriver = () => {
     return imageURL;
 }
 
+// This function is used by other pages to retrive the name of the current user
 const getName = () => {
     return CurrentUser['name'];
 }
 
+// This is the inital function that is called when the user wants to update his photo in the 'SettingsScreen'
 const updatePhoto = async (uri) => {
     try {
         var ref = await firebase.storage().ref("profile photo").child(CurrentEmail).delete();
@@ -162,10 +177,13 @@ const updatePhoto = async (uri) => {
     uploadImage(uri, CurrentEmail);
 }
 
+// This function is used to quickly retrive the already downloaded phone number of the 
+//  currently logged in user.
 const getPhone = () => {
     return CurrentUser['phone'];
 }
 
+// This function is called when the user wants to update his phone number in the 'SettingsScreen'
 const updatePhoneDB = async (newPhone) => {
     var query = await db.collection('users').where('email', '==', CurrentUser['email']);
     await query.get().then(function (querySnapshot) {
@@ -181,6 +199,7 @@ const updatePhoneDB = async (newPhone) => {
 
 }
 
+// Used to get a formated string that shows date and time. It is attached to new requests.
 const getTime = () => {
     let date_ob = new Date();
 
@@ -196,6 +215,7 @@ const getTime = () => {
     return currenttime;
 }
 
+// This function logs a new request in the database. 
 const updateRequestDB = (region, emergencyDetails) => {
     let requestInfo = {
         name: CurrentUser['name'],
@@ -212,10 +232,14 @@ const updateRequestDB = (region, emergencyDetails) => {
     db.collection('pending requests').add(requestInfo);
 }
 
+// Used to retrive user information used on different pages.
 const getCurrentUser = () => {
     return CurrentUser;
 }
 
+// When a request has been completed and either the Requester or EMS Member that responded to the request
+//  ends it, this function removes that request from the database table 'Servicing Requests'. This table is 
+//  for storing requests that are currently being attended to be an EMS Member.
 const removeRequestFromServicing = (userType) => {
     var ref = db.collection('servicing requests').where(userType, '==', auth.currentUser.email);
     ref.get().then(function (querySnapshot) {
@@ -225,6 +249,7 @@ const removeRequestFromServicing = (userType) => {
     });
 }
 
+// This function is called when an Administrator removes an EMS Member.
 const removeMember = async (memberToRemove) => {
     memberToRemove['user_type'] = 'requester';
     delete memberToRemove.photo;
@@ -236,6 +261,7 @@ const removeMember = async (memberToRemove) => {
     });
 }
 
+// This function is called when an Administrator makes an EMS Member an Admin as well.
 const makeAdmin = async (memberToPromote) => {
     memberToPromote['user_type'] = 'Admin';
     delete memberToPromote.photo;
@@ -247,26 +273,7 @@ const makeAdmin = async (memberToPromote) => {
     });
 }
 
-const sendNewRequestNotification = async () => {
-    var ref = await db.collection('users').where("user_type", '==', 'EMS_Member');
-    // console.log('EMS Members' + ref.get())
-    ref.get().then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-            // var seen = [];
-            // JSON.stringify(doc, function(key, val) {
-            //     if (val != null && typeof val == "object") {
-            //          if (seen.indexOf(val) >= 0) {
-            //              return;
-            //          }
-            //          seen.push(val);
-            //      }
-            //      return val;
-            //  })
-            console.log('EMS Members ' + doc.data()['name'])
-        });
-    });
-}
-
+// Returns the currently logged in user.
 const getSavedUser = async (userId) => {
     CurrentEmail = userId;
     CurrentUser = await get_user(userId);
@@ -275,6 +282,7 @@ const getSavedUser = async (userId) => {
     return CurrentUser;
 };
 
+// Stores the user's token in the database (used for push notifications)
 const storeToken = async (token) => {
     try {
         var ref = await db.collection('users').where("email", '==', CurrentEmail);
@@ -290,6 +298,7 @@ const storeToken = async (token) => {
     }
 }
 
+// Used to send a push notificaitons to EMS Members when a new request is made.
 const sendPushNotification = async () => {
     try {
         let textBody = CurrentUser['name'] + " needs your help!";
@@ -318,6 +327,8 @@ const sendPushNotification = async () => {
     }
 }
 
+// Used to send a push notificaiton to the requester that made the request that his request
+//  has been accepted.
 const pushNotificaionRequester = async (id) => {
     try {
         let textBody = CurrentUser['name'] + " is on his way!";
@@ -363,7 +374,6 @@ export {
     addNewEmsMember,
     removeMember,
     makeAdmin,
-    sendNewRequestNotification,
     getSavedUser,
     storeToken,
     sendPushNotification,
