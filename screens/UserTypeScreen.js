@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 import Colors from "../constants/colors.js";
 import CustomButton from "../components/CustomButton";
 
+// The user selects its user type in this screen.
 const UserTypeScreen = ({ navigation }) => {
   const onButtonPress = (user) => {
     console.log(user);
-    navigation.navigate('LoginScreen',{
-      userType: user
+    navigation.navigate("LoginScreen", {
+      userType: user,
     });
   };
 

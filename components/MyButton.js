@@ -1,15 +1,20 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import Colors from "../constants/colors.js";
 import {
-    widthPercentageToDP,
-    heightPercentageToDP,
-  } from "react-native-responsive-screen";
+  widthPercentageToDP,
+  heightPercentageToDP,
+} from "react-native-responsive-screen";
 
+// This is a custom made simple button. And is used as login and signup button
+// and other buttons to keep a consistent size and style.
 const MyButton = (props) => {
   return (
-    <TouchableOpacity style={{...styles.button, ...props.buttonStyle}} onPress={props.onPress}>
-      <Text style={{...styles.text, ...props.textStyle}}>{props.text}</Text>
+    <TouchableOpacity
+      style={{ ...styles.button, ...props.buttonStyle }}
+      onPress={props.onPress}
+    >
+      <Text style={{ ...styles.text, ...props.textStyle }}>{props.text}</Text>
     </TouchableOpacity>
   );
 };

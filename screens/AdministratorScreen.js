@@ -11,6 +11,8 @@ import SettingsScreen from "./SettingsScreen";
 import RequestHistoryScreen from "./RequestHistoryScreen";
 import EMSMemberListScreen from "./EMSMemberListScreen";
 
+// This screen is just a container screen for Administrator.
+// It has tabs at the bottom thorugh which the Administrator can view other screens available to him.
 const AdministratorScreen = ({ route, navigation }) => {
   const Tab = createBottomTabNavigator();
 
@@ -18,8 +20,7 @@ const AdministratorScreen = ({ route, navigation }) => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
+          //Define tab icons.
           if (route.name === "RequestHistoryScreen") {
             return (
               <Entypo

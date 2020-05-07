@@ -8,7 +8,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
-  AsyncStorage
+  AsyncStorage,
 } from "react-native";
 import Colors from "../constants/colors.js";
 import {
@@ -18,8 +18,10 @@ import {
 import { signin } from "../components/dbComm";
 import * as Progress from "react-native-progress";
 import { database } from "firebase";
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions } from "@react-navigation/native";
 
+//This is the login screen. Its same for all user except for a signup option
+// available to requester.
 const LoginScreen = ({ route, navigation }) => {
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,24 +45,24 @@ const LoginScreen = ({ route, navigation }) => {
       ]);
     } else {
       if (
-        route.params.userType == "Requester" && (userInfo["user_type"] == "requester" || userInfo["user_type"] == "Admin" 
-          || userInfo["user_type"] == "EMS_Member")
+        // take different users to different screens.
+        route.params.userType == "Requester" &&
+        (userInfo["user_type"] == "requester" ||
+          userInfo["user_type"] == "Admin" ||
+          userInfo["user_type"] == "EMS_Member")
       ) {
-        // navigation.navigate("RequesterScreen");
-        try {
-          await AsyncStorage.setItem('userId', email);
-          await AsyncStorage.setItem('userProfile', route.params.userType);
+        try { // save user state for persistant login
+          await AsyncStorage.setItem("userId", email);
+          await AsyncStorage.setItem("userProfile", route.params.userType);
         } catch (error) {
           // Error setting data
-          console.log('error setting data')
+          console.log("error setting data");
           console.log(error.message);
         }
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [
-              { name: "RequesterScreen" },
-            ],
+            routes: [{ name: "RequesterScreen" }],
           })
         );
       } else if (
@@ -68,42 +70,36 @@ const LoginScreen = ({ route, navigation }) => {
         (userInfo["user_type"] == "EMS_Member" ||
           userInfo["user_type"] == "Admin")
       ) {
-        // navigation.navigate("EMSMemberScreen");
-        try {
-          await AsyncStorage.setItem('userId', email);
-          await AsyncStorage.setItem('userProfile', route.params.userType);
+        try { // save user state for persistant login
+          await AsyncStorage.setItem("userId", email);
+          await AsyncStorage.setItem("userProfile", route.params.userType);
         } catch (error) {
           // Error setting data
-          console.log('error setting data')
+          console.log("error setting data");
           console.log(error.message);
         }
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [
-              { name: "EMSMemberScreen" },
-            ],
+            routes: [{ name: "EMSMemberScreen" }],
           })
         );
       } else if (
         route.params.userType == "Administrator" &&
         userInfo["user_type"] == "Admin"
       ) {
-        // navigation.navigate("AdministratorScreen");
-        try {
-          await AsyncStorage.setItem('userId', email);
-          await AsyncStorage.setItem('userProfile', route.params.userType);
+        try { // save user state for persistant login
+          await AsyncStorage.setItem("userId", email);
+          await AsyncStorage.setItem("userProfile", route.params.userType);
         } catch (error) {
           // Error setting data
-          console.log('error setting data')
+          console.log("error setting data");
           console.log(error.message);
         }
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [
-              { name: "AdministratorScreen" },
-            ],
+            routes: [{ name: "AdministratorScreen" }],
           })
         );
       } else {
@@ -188,7 +184,6 @@ const LoginScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    // paddingVertical: heightPercentageToDP("10%"),
     alignItems: "center",
     justifyContent: "center",
     flexGrow: 1,

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,17 +12,11 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
-import { Ionicons, Entypo } from "@expo/vector-icons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
 import MyButton from "../components/MyButton";
-import Photo from "../components/Photo";
-import * as Progress from "react-native-progress";
-import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
-import { auth, db, firebase } from '../components/ApiInfo';
+import { auth, db, firebase } from "../components/ApiInfo";
 
+// Through this screen the administrator can view the request history.
 const AcceptRequestScreen = () => {
   const [requestHistory, setRequestHistory] = useState([]);
   const [isRequestSelected, setIsRequestSelected] = useState(false);
@@ -30,26 +24,27 @@ const AcceptRequestScreen = () => {
   const [historyUpdate, setHistoryUpdate] = useState(false);
   let content;
 
+  // The below function listens for changes in request history.
   const historyListener = () => {
-    let observer = db.collection('history')
-      .onSnapshot(querySnapshot => {
-        querySnapshot.docChanges().forEach(change => {
-          if (change.type === 'added') {
-            var item = change.doc.data();
-            setRequestHistory(requestHistory => [...requestHistory, item]);
-          }
-        });
+    let observer = db.collection("history").onSnapshot((querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          var item = change.doc.data();
+          setRequestHistory((requestHistory) => [...requestHistory, item]);
+        }
       });
-  }
+    });
+  };
   const [getHistroy, setGetHistroy] = useState(() => {
     historyListener();
-  })
+  });
 
-
+  // The content of the screen varies as the admin performs
+  // different operations available to him. The below conditions makes sure of it.
   if (!isRequestSelected) {
+    // the content for when admin wants to view all request history.
     content = (
       <View style={styles.container}>
-        {/* <Text>aaa</Text> */}
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Request History</Text>
         </View>
@@ -71,7 +66,7 @@ const AcceptRequestScreen = () => {
                 />
                 <InfoText
                   label="Responder: "
-                  text={item['EMS Member Name']}
+                  text={item["EMS Member Name"]}
                   border={1}
                   labelWidth={widthPercentageToDP("22%")}
                   fontSize={widthPercentageToDP("4%")}
@@ -90,35 +85,35 @@ const AcceptRequestScreen = () => {
       </View>
     );
   } else {
+    // the content for when admin wants to view a specific request.
     content = (
       <View style={styles.container}>
-        {/* <Text>hello</Text> */}
         <View style={styles.requestDetailContainer}>
           <View style={styles.requestDetails}>
             <InfoText
               label="Requester: "
-              text={requestSelected['name']}
+              text={requestSelected["name"]}
               border={1}
               labelWidth={widthPercentageToDP("22%")}
               fontSize={widthPercentageToDP("4%")}
             />
             <InfoText
               label="Phone: "
-              text={requestSelected['phone']}
+              text={requestSelected["phone"]}
               border={1}
               labelWidth={widthPercentageToDP("22%")}
               fontSize={widthPercentageToDP("4%")}
             />
             <InfoText
               label="Responder: "
-              text={requestSelected['EMS Member Name']}
+              text={requestSelected["EMS Member Name"]}
               border={1}
               labelWidth={widthPercentageToDP("22%")}
               fontSize={widthPercentageToDP("4%")}
             />
             <InfoText
               label="Phone: "
-              text={requestSelected['EMS Member Phone']}
+              text={requestSelected["EMS Member Phone"]}
               border={1}
               labelWidth={widthPercentageToDP("22%")}
               fontSize={widthPercentageToDP("4%")}
@@ -170,7 +165,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    // justifyContent: "center",
     backgroundColor: Colors.tertiary,
   },
   titleContainer: {
@@ -190,7 +184,6 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: Colors.tertiary,
     flexDirection: "row",
-    // alignItems: "center",
     borderRadius: widthPercentageToDP("20%"),
     marginTop: heightPercentageToDP("3%"),
     marginBottom: heightPercentageToDP("1%"),
@@ -202,13 +195,12 @@ const styles = StyleSheet.create({
   infoContainer: {
     width: widthPercentageToDP("70%"),
     paddingHorizontal: widthPercentageToDP("5%"),
-    // justifyContent: 'space-evenly'
   },
   requestDetailContainer: {
     elevation: 4,
     backgroundColor: Colors.tertiary,
     width: widthPercentageToDP("80%"),
-    height: "70%", //heightPercentageToDP("70%"),
+    height: "70%",
     marginTop: heightPercentageToDP("5%"),
     borderRadius: widthPercentageToDP("7%"),
     paddingVertical: heightPercentageToDP("3%"),
@@ -225,9 +217,7 @@ const styles = StyleSheet.create({
     color: Colors.secondary,
     fontWeight: "bold",
     paddingHorizontal: widthPercentageToDP("2.5%"),
-    // height: heightPercentageToDP("5%"),
     justifyContent: "space-evenly",
-    // width: widthPercentageToDP("16%"),
   },
   infoText: {
     fontFamily: "Helvetica",
@@ -238,12 +228,11 @@ const styles = StyleSheet.create({
   emergencyDetails: {
     paddingHorizontal: widthPercentageToDP("2%"),
     width: widthPercentageToDP("67%"),
-    // backgroundColor: "blue",
     overflow: "scroll",
   },
   emergencyDetailsContainer: {
     marginTop: heightPercentageToDP("1%"),
-    height: "50%", //heightPercentageToDP('35%')
+    height: "50%",
   },
   endButton: {
     width: widthPercentageToDP("80%"),

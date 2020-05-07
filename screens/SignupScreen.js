@@ -4,35 +4,23 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   TextInput,
   ScrollView,
   Alert,
-  Modal,
-  TouchableOpacityBase,
-  Animated,
-  Button,
-  FlatList,
 } from "react-native";
 import Colors from "../constants/colors.js";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
-import { Ionicons, Entypo } from "@expo/vector-icons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
 import MyButton from "../components/MyButton";
 import Photo from "../components/Photo";
 import * as Progress from "react-native-progress";
-import call from "react-native-phone-call";
-import InfoText from "../components/InfoText";
-import { Content } from "native-base";
 import * as ImagePicker from "expo-image-picker";
 import { signup } from "../components/dbComm";
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions } from "@react-navigation/native";
 
+// This is the sign up screen. It is only available to requester.
 const SignupScreen = ({ route, navigation }) => {
   const [isNextPressed, setIsNextPressed] = useState(false);
   const [newName, setNewName] = useState("");
@@ -86,7 +74,7 @@ const SignupScreen = ({ route, navigation }) => {
 
   const signupHandler = async () => {
     console.log("Sign Up Finish Pressed.");
-    if (newPhone.length!==11 || newPhone.match(/[0-9]/g).length!==11) {
+    if (newPhone.length !== 11 || newPhone.match(/[0-9]/g).length !== 11) {
       Alert.alert("Please enter a valid phone number", "", [
         {
           text: "Okay",
@@ -100,27 +88,26 @@ const SignupScreen = ({ route, navigation }) => {
         phone: newPhone,
         name: newName,
       };
-  
+
       setIsSigningUp(true);
       let isValid = await signup(userProfile, newPassword, picture.uri);
       setIsSigningUp(false);
-  
+
       if (isValid) {
-        // navigation.navigate("RequesterScreen");
+        // navigate to requester screen if validated
         try {
-          await AsyncStorage.setItem('userId', newEmail);
-          await AsyncStorage.setItem('userProfile', 'Requester');
+          // save user state for persistant login
+          await AsyncStorage.setItem("userId", newEmail);
+          await AsyncStorage.setItem("userProfile", "Requester");
         } catch (error) {
           // Error setting data
-          console.log('error setting data')
+          console.log("error setting data");
           console.log(error.message);
         }
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [
-              { name: "RequesterScreen" },
-            ],
+            routes: [{ name: "RequesterScreen" }],
           })
         );
       } else {
@@ -131,9 +118,7 @@ const SignupScreen = ({ route, navigation }) => {
           },
         ]);
       }
-
     }
-
   };
 
   // The below condition brings up a signing you up overlay when user information
@@ -150,6 +135,8 @@ const SignupScreen = ({ route, navigation }) => {
     );
   }
 
+  // There are two steps in signup. The below condition
+  // changes the screen content for both steps.
   if (!isNextPressed) {
     content = (
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -174,14 +161,6 @@ const SignupScreen = ({ route, navigation }) => {
                 defaultValue={newEmail}
               />
             </View>
-            {/* <View style={styles.inputContainer}>
-              <TextInput
-                placeholder="Phone"
-                onChangeText={(text) => setNewPhone(text)}
-                defaultValue={newPhone}
-                autoCapitalize="none"
-              />
-            </View> */}
             <View style={styles.inputContainer}>
               <TextInput
                 placeholder="Password (atleast 6 characters)"
@@ -259,10 +238,7 @@ const SignupScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    // paddingVertical: heightPercentageToDP("10%"),
-    // backgroundColor: 'green'
     alignItems: "center",
-    // justifyContent: "center",
   },
   container: {
     flex: 1,
@@ -289,15 +265,12 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP("90%"),
     height: heightPercentageToDP("50%"),
     justifyContent: "space-evenly",
-    // paddingTop: heightPercentageToDP("6%"),
     backgroundColor: Colors.tertiary,
     alignItems: "center",
-    // elevation: 4,
-    // borderRadius: 25
   },
   inputContainer: {
-    width: "85%", //widthPercentageToDP("70%"),
-    height: "12%", //heightPercentageToDP("7%"),
+    width: "85%",
+    height: "12%",
     backgroundColor: Colors.tertiary,
     borderRadius: widthPercentageToDP("5%"),
     elevation: 4,
@@ -315,7 +288,7 @@ const styles = StyleSheet.create({
   },
   photoContainer: {
     flexDirection: "row",
-    marginTop: "25%", //heightPercentageToDP("15%"),
+    marginTop: "25%",
     alignItems: "center",
     width: widthPercentageToDP("85%"),
     justifyContent: "space-between",
