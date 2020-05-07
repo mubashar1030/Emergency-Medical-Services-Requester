@@ -6,12 +6,23 @@ import {
 } from "react-native-responsive-screen";
 import Colors from "../constants/colors.js";
 
-
+// This component is a text field which can have a border at bottom.
+// It is used all over the project in displaying the info in list cards and other screens.
 const InfoText = (props) => {
   return (
-    <View style={{...styles.info ,borderBottomWidth: props.border}}>
-      <Text style={{...styles.label, fontSize: props.fontSize, width: props.labelWidth}}>{props.label} </Text>
-      <Text style={{...styles.infoText, fontSize: props.fontSize,}}>{props.text}</Text>
+    <View style={{ ...styles.info, borderBottomWidth: props.border }}>
+      <Text
+        style={{
+          ...styles.label,
+          fontSize: props.fontSize,
+          width: props.labelWidth,
+        }}
+      >
+        {props.label}{" "}
+      </Text>
+      <Text style={{ ...styles.infoText, fontSize: props.fontSize }}>
+        {props.text}
+      </Text>
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -17,50 +17,59 @@ import {
 import MyButton from "../components/MyButton";
 import Photo from "../components/Photo";
 import InfoText from "../components/InfoText";
-import { auth, db, firebase } from '../components/ApiInfo';
+import { auth, db, firebase } from "../components/ApiInfo";
 import { addNewEmsMember, removeMember, makeAdmin } from "../components/dbComm";
 import * as Progress from "react-native-progress";
 
+// Through this screen the administrator can manage the EMS members (view, add, remove, make administrator)
 const AcceptRequestScreen = () => {
   const [isAddNewMember, setIsAddNewMember] = useState(false);
   const [isMemberSelected, setIsMemberSelected] = useState(false);
   const [memberSelected, setMemberSelected] = useState(null);
   const [memberList, setMemberList] = useState([]);
-  const [isAddingMemberOverlay,setIsAddingMemberOverlay] = useState(false);
+  const [isAddingMemberOverlay, setIsAddingMemberOverlay] = useState(false);
 
-  const [newMemberName, setNewMemberName] = useState('');
-  const [newMemberEmail, setNewMemberEmail] = useState('');
-  const [newMemberPhone, setNewMemberPhone] = useState('');
-  const [newMemberPassword, setNewMemberPassword] = useState('');
-  const [newMemberConfirmPassword, setNewMemberConfirmPassword] = useState('');
+  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberEmail, setNewMemberEmail] = useState("");
+  const [newMemberPhone, setNewMemberPhone] = useState("");
+  const [newMemberPassword, setNewMemberPassword] = useState("");
+  const [newMemberConfirmPassword, setNewMemberConfirmPassword] = useState("");
 
+  // The below function listens for changes in EMS member list.
   const memberListener = () => {
-    let observer = db.collection('users')
-      .onSnapshot(querySnapshot => {
-        querySnapshot.docChanges().forEach(async (change) => {
-          if (change.type === 'added') {
-            var item = change.doc.data();
-            var URL;
-            if (item['user_type'] == 'EMS_Member') {
-              try {
-                var ref = await firebase.storage().ref("profile photo").child(item['email']).getDownloadURL().then(url => {
+    let observer = db.collection("users").onSnapshot((querySnapshot) => {
+      querySnapshot.docChanges().forEach(async (change) => {
+        if (change.type === "added") {
+          var item = change.doc.data();
+          var URL;
+          if (item["user_type"] == "EMS_Member") {
+            try {
+              var ref = await firebase
+                .storage()
+                .ref("profile photo")
+                .child(item["email"])
+                .getDownloadURL()
+                .then((url) => {
                   URL = url;
                 });
-                item['photo'] = { uri: URL };
-                console.log("Success: Image Retrived From Database");
-              } catch (error) {
-                item['photo'] = { uri: "https://therminic2018.eu/wp-content/uploads/2018/07/dummy-avatar-300x300.jpg" };
-              }
-
-              setMemberList(memberList => [...memberList, item]);
+              item["photo"] = { uri: URL };
+              console.log("Success: Image Retrived From Database");
+            } catch (error) {
+              item["photo"] = {
+                uri:
+                  "https://therminic2018.eu/wp-content/uploads/2018/07/dummy-avatar-300x300.jpg",
+              };
             }
+
+            setMemberList((memberList) => [...memberList, item]);
           }
-        });
+        }
       });
-  }
+    });
+  };
   const [getMembers, setGetMembers] = useState(() => {
     memberListener();
-  })
+  });
 
   const makeAdminHandler = () => {
     Alert.alert("Are you sure?", "", [
@@ -72,16 +81,15 @@ const AcceptRequestScreen = () => {
           setIsMemberSelected(false);
           if (memberList.length != 1) {
             for (var i = 0; i < memberList.length; i++) {
-              if (memberList[i]['email'] == memberSelected['email']) {
+              if (memberList[i]["email"] == memberSelected["email"]) {
                 memberList.splice(i, 1);
                 break;
               }
             }
-          }
-          else {
+          } else {
             setMemberList([]);
           }
-        }
+        },
       },
       {
         text: "No",
@@ -100,13 +108,12 @@ const AcceptRequestScreen = () => {
           setIsMemberSelected(false);
           if (memberList.length != 1) {
             for (var i = 0; i < memberList.length; i++) {
-              if (memberList[i]['email'] == memberSelected['email']) {
+              if (memberList[i]["email"] == memberSelected["email"]) {
                 memberList.splice(i, 1);
                 break;
               }
             }
-          }
-          else {
+          } else {
             setMemberList([]);
           }
         },
@@ -116,8 +123,6 @@ const AcceptRequestScreen = () => {
         style: "cancel",
       },
     ]);
-
-
   };
 
   const addMemberHandler = async () => {
@@ -128,22 +133,24 @@ const AcceptRequestScreen = () => {
           style: "cancel",
         },
       ]);
-    }  else if (newMemberPassword.length < 6) {
+    } else if (newMemberPassword.length < 6) {
       Alert.alert("Password length should be atleast six", "", [
         {
           text: "Okay",
           style: "cancel",
         },
       ]);
-    } else if (newMemberPhone.length!==11 || newMemberPhone.match(/[0-9]/g).length!==11) {
+    } else if (
+      newMemberPhone.length !== 11 ||
+      newMemberPhone.match(/[0-9]/g).length !== 11
+    ) {
       Alert.alert("Please enter a valid phone number", "", [
         {
           text: "Okay",
           style: "cancel",
         },
       ]);
-    }
-    else {
+    } else {
       let userProfile = {
         email: newMemberEmail,
         name: newMemberName,
@@ -165,7 +172,7 @@ const AcceptRequestScreen = () => {
         ]);
       }
     }
-  }
+  };
 
   // The below condition brings up an overlay when new EMS member information
   // is being verfying by database.
@@ -181,11 +188,12 @@ const AcceptRequestScreen = () => {
     );
   }
 
-
+  // The content of the screen varies as the admin performs
+  // different operations available to him. The below conditions makes sure of it.
   let content;
 
   if (isAddNewMember) {
-    // console.log()
+    // the content for when admin wants to add new member.
     content = (
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
@@ -241,6 +249,7 @@ const AcceptRequestScreen = () => {
       </ScrollView>
     );
   } else if (isMemberSelected) {
+    // the content for when admin is viewing a specific member
     content = (
       <View style={styles.container}>
         <Photo
@@ -274,8 +283,8 @@ const AcceptRequestScreen = () => {
           <View style={styles.buttonContainer}>
             <MyButton
               buttonStyle={{
-                width: "40%", //widthPercentageToDP("25%"),
-                height: "70%", //heightPercentageToDP("5%"),
+                width: "40%",
+                height: "70%",
               }}
               text="Make Admin"
               textStyle={{ fontSize: 17 }}
@@ -283,8 +292,8 @@ const AcceptRequestScreen = () => {
             />
             <MyButton
               buttonStyle={{
-                width: "40%", //widthPercentageToDP("25%"),
-                height: "70%", //heightPercentageToDP("5%"),
+                width: "40%",
+                height: "70%",
               }}
               text="Remove"
               textStyle={{ fontSize: 17 }}
@@ -307,7 +316,7 @@ const AcceptRequestScreen = () => {
       </View>
     );
   } else {
-    content = (
+    content = ( // the content for when admin is viewing the list of EMS members
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>EMS Members</Text>
@@ -375,20 +384,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.tertiary,
   },
   scrollContainer: {
-    // paddingVertical: heightPercentageToDP("10%"),
     alignItems: "center",
     justifyContent: "center",
-    flexGrow: 1
+    flexGrow: 1,
   },
   titleContainer: {
-    width: "90%", //widthPercentageToDP("90%"),
-    marginTop: "2%", //heightPercentageToDP("2%"),
-    marginBottom: "1%", //heightPercentageToDP("1%"),
+    width: "90%",
+    marginTop: "2%",
+    marginBottom: "1%",
   },
   title: {
     fontFamily: "Helvetica",
     color: Colors.primary,
-    fontSize: 32, //heightPercentageToDP("4%"),
+    fontSize: 32,
     fontWeight: "bold",
   },
   card: {
@@ -408,7 +416,6 @@ const styles = StyleSheet.create({
   photo: {
     width: widthPercentageToDP("20%"),
     height: widthPercentageToDP("20%"),
-    // backgroundColor: 'red'
   },
   infoContainer: {
     width: "80%",
@@ -417,12 +424,12 @@ const styles = StyleSheet.create({
   addMemberButton: {
     width: widthPercentageToDP("82%"),
     flexDirection: "row-reverse",
-    marginTop: "1%", //heightPercentageToDP("1%"),
-    marginBottom: "1%", //heightPercentageToDP("1%"),
+    marginTop: "1%",
+    marginBottom: "1%",
   },
   memberInformationContainer: {
     width: widthPercentageToDP("90%"),
-    height: "35%", //heightPercentageToDP('40%'),
+    height: "35%",
     elevation: 4,
     backgroundColor: Colors.tertiary,
     borderRadius: widthPercentageToDP("7%"),
@@ -436,7 +443,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: "6%",
   },
   buttonContainer: {
-    // backgroundColor: 'blue',
     width: "88%",
     height: "30%",
     flexDirection: "row",
@@ -447,21 +453,18 @@ const styles = StyleSheet.create({
   endButton: {
     width: widthPercentageToDP("90%"),
     flexDirection: "row-reverse",
-    marginTop: "10%", //heightPercentageToDP("4%"),
+    marginTop: "10%",
   },
   addMemberContaniner: {
     width: widthPercentageToDP("90%"),
     height: heightPercentageToDP("50%"),
     justifyContent: "space-evenly",
-    // paddingTop: heightPercentageToDP("6%"),
     backgroundColor: Colors.tertiary,
     alignItems: "center",
-    // elevation: 4,
-    // borderRadius: 25
   },
   inputContainer: {
-    width: "85%", //widthPercentageToDP("70%"),
-    height: "12%", //heightPercentageToDP("7%"),
+    width: "85%",
+    height: "12%",
     backgroundColor: Colors.tertiary,
     borderRadius: widthPercentageToDP("5%"),
     elevation: 4,
@@ -470,7 +473,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer2: {
     marginTop: "3%",
-    marginBottom: '3%'
+    marginBottom: "3%",
   },
   signupText: {
     fontFamily: "Helvetica",

@@ -5,7 +5,7 @@ import {
   View,
   TextInput,
   ScrollView,
-  AsyncStorage
+  AsyncStorage,
 } from "react-native";
 import Colors from "../constants/colors.js";
 import {
@@ -14,20 +14,23 @@ import {
 } from "react-native-responsive-screen";
 import Photo from "../components/Photo";
 import MyButton from "../components/MyButton";
-import * as ImagePicker from 'expo-image-picker';
-import { photoUrlRetriver, updatePhoto, getName, getPhone, updatePhoneDB } from '../components/dbComm';
-import { auth, db, firebase } from '../components/ApiInfo';
-import { CommonActions } from '@react-navigation/native';
+import * as ImagePicker from "expo-image-picker";
+import {
+  photoUrlRetriver,
+  updatePhoto,
+  getName,
+  getPhone,
+  updatePhoneDB,
+} from "../components/dbComm";
+import { auth, db, firebase } from "../components/ApiInfo";
+import { CommonActions } from "@react-navigation/native";
 
-
-
+// This is the settings screen and available to all users.
 const SettingScreen = ({ route, navigation }) => {
   const [isEditPressed, setIsEditPressed] = useState(false);
   const [phone, setPhone] = useState(getPhone());
   const [picture, setPicture] = useState({ uri: photoUrlRetriver() });
   const [name, setName] = useState(getName());
-
-
 
   const handleChangePhoto = async () => {
     try {
@@ -49,16 +52,15 @@ const SettingScreen = ({ route, navigation }) => {
   };
 
   const updatePhone = () => {
-    setIsEditPressed(false)
+    setIsEditPressed(false);
     updatePhoneDB(phone);
+  };
 
-  }
-
-  const logoutHandler = async () =>{
-    // navigation.navigate('UserTypeScreen')
+  const logoutHandler = async () => {
     try {
-      await AsyncStorage.setItem('userId', 'none');
-      await AsyncStorage.setItem('userProfile', 'none');
+      // clear saved user state.
+      await AsyncStorage.setItem("userId", "none");
+      await AsyncStorage.setItem("userProfile", "none");
     } catch (error) {
       // Error setting data
       console.log(error.message);
@@ -66,17 +68,16 @@ const SettingScreen = ({ route, navigation }) => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [
-          { name: "UserTypeScreen" },
-        ],
+        routes: [{ name: "UserTypeScreen" }],
       })
     );
-  }
+  };
 
+  // The component and button chenges when the user wants to change phone number.
+  // The below condition sees to it.
   let phoneComponent;
   let editButton;
   if (!isEditPressed) {
-    // setPhone("090078601");
     phoneComponent = <Text style={styles.infoText}>{phone}</Text>;
     editButton = (
       <MyButton
@@ -119,9 +120,6 @@ const SettingScreen = ({ route, navigation }) => {
       <View style={styles.container}>
         <View style={styles.photoContainer}>
           <Photo photo={picture} photoStyle={styles.photo} />
-          {/* <TouchableOpacity style={styles.uploadPhotoButton}>
-            <Text>Upload Photo</Text>
-        </TouchableOpacity> */}
           <MyButton
             buttonStyle={styles.uploadPhotoButton}
             text="Change Picture"
@@ -140,22 +138,9 @@ const SettingScreen = ({ route, navigation }) => {
           </View>
           <View style={styles.info}>
             <Text style={styles.label}>Phone: </Text>
-            {/* <Text style={styles.infoText}>090078601</Text> */}
             {phoneComponent}
           </View>
-          <View style={styles.buttonContainer}>
-            {/* <MyButton
-            buttonStyle={{
-              ...styles.uploadPhotoButton,
-              width: widthPercentageToDP("25%"),
-              height: heightPercentageToDP("5%"),
-            }}
-            text="Edit"
-            textStyle={styles.uploadPhotoText}
-            onPress={()=>setIsEditPressed(true)}
-          /> */}
-            {editButton}
-          </View>
+          <View style={styles.buttonContainer}>{editButton}</View>
         </View>
         <View style={styles.logout}>
           <MyButton
@@ -179,21 +164,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    // justifyContent: "center",
     backgroundColor: Colors.tertiary,
   },
   photoContainer: {
     flexDirection: "row",
-    marginTop: '15%',//heightPercentageToDP("15%"),
+    marginTop: "15%",
     alignItems: "center",
     width: widthPercentageToDP("85%"),
     justifyContent: "space-between",
-    height: '30%',
-    // backgroundColor: 'red'
+    height: "30%",
   },
   uploadPhotoButton: {
     width: widthPercentageToDP("37%"),
-    height: '35%',//heightPercentageToDP("6%"),
+    height: "35%",
     backgroundColor: Colors.tertiary,
   },
   photo: {
@@ -206,8 +189,8 @@ const styles = StyleSheet.create({
     color: Colors.secondary,
   },
   infoContainer: {
-    marginTop: '5%',//heightPercentageToDP("5%"),
-    height: '35%',//heightPercentageToDP("30%"),
+    marginTop: "5%",
+    height: "35%",
     width: widthPercentageToDP("90%"),
     elevation: 4,
     borderRadius: widthPercentageToDP("7%"),
@@ -218,7 +201,7 @@ const styles = StyleSheet.create({
   },
   info: {
     width: "100%",
-    height: '23%',//heightPercentageToDP("5%"),
+    height: "23%",
     borderBottomWidth: 1,
     alignItems: "center",
     paddingHorizontal: widthPercentageToDP("2.5%"),

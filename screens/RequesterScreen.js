@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Colors from "../constants/colors.js";
 import {
   widthPercentageToDP,
@@ -11,35 +7,19 @@ import {
 } from "react-native-responsive-screen";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import GenerateRequestScreen from './GenerateRequestScreen';
-import SettingsScreen from './SettingsScreen'
+import GenerateRequestScreen from "./GenerateRequestScreen";
+import SettingsScreen from "./SettingsScreen";
 
+// This screen is just a container screen for requester.
+// It has tabs at the bottom thorugh which the requester can view other screens available to him.
 const RequesterScreen = ({ route, navigation }) => {
-
-  function HomeScreen() {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Home!</Text>
-      </View>
-    );
-  }
-
-  // function SettingsScreen() {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <Text>Settings!</Text>
-  //     </View>
-  //   );
-  // }
-
   const Tab = createBottomTabNavigator();
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
+          // define tab icons.
           if (route.name === "GenerateRequest") {
             return (
               <Entypo
@@ -57,12 +37,11 @@ const RequesterScreen = ({ route, navigation }) => {
               />
             );
           }
-
         },
       })}
       tabBarOptions={{
         showLabel: false,
-        style: {backgroundColor: Colors.tertiary},
+        style: { backgroundColor: Colors.tertiary },
         inactiveBackgroundColor: Colors.tertiary,
         tabStyle: { elevation: 4, borderRadius: 10 },
         activeBackgroundColor: Colors.selected,
