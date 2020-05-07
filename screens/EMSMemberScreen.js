@@ -25,7 +25,7 @@ const EMSMemberScreen = ({ route, navigation }) => {
               <Entypo
                 name="plus"
                 size={widthPercentageToDP("12%")}
-                color={Colors.primary}
+                color={Colors.secondary}
               />
             );
           } else if (route.name === "Settings") {
