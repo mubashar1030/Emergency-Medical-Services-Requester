@@ -15,19 +15,25 @@ import {
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import MyButton from "../components/MyButton";
-import Photo from '../components/Photo'
+import Photo from "../components/Photo";
 import * as Progress from "react-native-progress";
 import call from "react-native-phone-call";
-import { updateRequestDB, removeRequestFromServicing, sendPushNotification } from '../components/dbComm';
-import { auth, db, firebase } from '../components/ApiInfo';
-import { registerForPushNotificationsAsync } from '../components/PushNotification';
+import {
+  updateRequestDB,
+  removeRequestFromServicing,
+  sendPushNotification,
+} from "../components/dbComm";
+import { auth, db, firebase } from "../components/ApiInfo";
+import { registerForPushNotificationsAsync } from "../components/PushNotification";
 
+// This screen is only available to Requester. Through this screen
+// the requester can generate requests and view responder information.
 const GenerateRequestScreen = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [region, setRegion] = useState({
-    latitude: 31.47, //31.5770699,//31.47,
-    longitude: 74.4111, //74.3751424,//74.4111,
+    latitude: 31.47,
+    longitude: 74.4111,
     latitudeDelta: 0.00922,
     longitudeDelta: 0.00421,
   });
@@ -35,15 +41,23 @@ const GenerateRequestScreen = () => {
   const [showMap, setShowMap] = useState(true);
   const [isRequestAccepted, setIsRequestAccepted] = useState(false);
   const [emergencyDetails, setEmergencyDetails] = useState("");
-  const [emsMemberDetails, setEmsMemberDetails] = useState({name: '', phone: '', photo: {}});
-  const [componentDidMount, setComponentDidMount] = useState( () => {
+  const [emsMemberDetails, setEmsMemberDetails] = useState({
+    name: "",
+    phone: "",
+    photo: {},
+  });
+  const [componentDidMount, setComponentDidMount] = useState(() => {
     registerForPushNotificationsAsync();
   });
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestPermissionsAsync()
-        .catch ( async () => {await Location.requestPermissionsAsync()});
+      // get location permission
+      let { status } = await Location.requestPermissionsAsync().catch(
+        async () => {
+          await Location.requestPermissionsAsync();
+        }
+      );
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         console.log("hello");
@@ -63,6 +77,7 @@ const GenerateRequestScreen = () => {
     })();
   }, []);
 
+  // set map region
   let Map;
   if (errorMsg) {
     text = errorMsg;
@@ -74,7 +89,6 @@ const GenerateRequestScreen = () => {
         onRegionChange={(reg) => setRegion(reg)}
         showsUserLocation
         showsMyLocationButton
-      // region={region}
       >
         <Marker
           coordinate={{
@@ -86,40 +100,40 @@ const GenerateRequestScreen = () => {
     );
   }
 
+  // this function listens if the request has been accepted
   const acceptanceListener = () => {
-    let observer = db.collection('servicing requests')
-      .onSnapshot(querySnapshot => {
-        querySnapshot.docChanges().forEach(change => {
-          if (change.type === 'added') {
-            // console.log('New Request: ', change.doc.data());
+    let observer = db
+      .collection("servicing requests")
+      .onSnapshot((querySnapshot) => {
+        querySnapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
             var item = change.doc.data();
             var valuePresent = false;
 
-            if (item['email'] == auth.currentUser.email) {
+            if (item["email"] == auth.currentUser.email) {
               valuePresent = true;
               console.log(valuePresent);
-              setEmsMemberDetails({name: item['EMS Member Name'], phone: item['EMS Member Phone'], photo: item['EMS Member Photo']});
+              setEmsMemberDetails({
+                name: item["EMS Member Name"],
+                phone: item["EMS Member Phone"],
+                photo: item["EMS Member Photo"],
+              });
               setIsRequestAccepted(true);
             }
           }
-          if (change.type === 'modified') {
-            console.log('Modified Request: ', change.doc.data());
+          if (change.type === "modified") {
+            console.log("Modified Request: ", change.doc.data());
           }
-          if (change.type === 'removed') {
-            // console.log('Removed Request: ', change.doc.data());
+          if (change.type === "removed") {
             let item = change.doc.data();
-            if (item['email'] == auth.currentUser.email) {
+            if (item["email"] == auth.currentUser.email) {
               setIsRequestGenerated(false);
               return;
             }
-
           }
-
         });
       });
-  }
-
-  
+  };
 
   const onRequestEMSPressHandler = () => {
     console.log(emergencyDetails);
@@ -135,11 +149,11 @@ const GenerateRequestScreen = () => {
     setShowMap(true);
     setIsRequestGenerated(false);
     setIsRequestAccepted(false);
-    removeRequestFromServicing('email');
-    console.log('Update: Requester Ended Request');
-
+    removeRequestFromServicing("email");
+    console.log("Update: Requester Ended Request");
   };
 
+  // opens phone app
   const makeCall = (phoneNumber) => {
     const args = {
       number: phoneNumber,
@@ -148,9 +162,12 @@ const GenerateRequestScreen = () => {
     call(args).catch(console.error);
   };
 
+  // The content of the screen varies as the EMS member performs
+  // different operations available to him. The below conditions makes sure of it.
   let content;
   if (!isRequestGenerated) {
     if (showMap) {
+      // the content when requester selects location
       content = (
         <View style={styles.container}>
           <View style={styles.mapContainer}>{Map}</View>
@@ -160,6 +177,7 @@ const GenerateRequestScreen = () => {
         </View>
       );
     } else {
+      // the content when requester adds emergency details
       content = (
         <ScrollView
           contentContainerStyle={{ alignItems: "center", flexGrow: 1 }}
@@ -187,9 +205,9 @@ const GenerateRequestScreen = () => {
     }
   } else {
     if (!isRequestAccepted) {
+      // the content when requester waits for his request to be accepted
       content = (
         <View style={styles.container}>
-          {/* <View style={styles.mapContainer}>{Map}</View> */}
           <View style={styles.waitingTextContainer}>
             <Text style={styles.waitingText1}>Searching for Responder</Text>
             <Text style={styles.waitingText2}>Please Wait</Text>
@@ -207,24 +225,16 @@ const GenerateRequestScreen = () => {
         </View>
       );
       console.log("Update: Waiting For Request To Be Accepted...");
-
-      //Listener
-
-
-      // setTimeout(() => {
-      //   setIsRequestAccepted(true);
-      // }, 3000);
     } else {
+      // the content where requester views responder information
       console.log("Success: Request Accepted");
       content = (
         <View style={styles.container}>
-          {/* <View style={styles.photoContainer}>
-            <Image
-              source={require("../assets/dummy.png")}
-              style={styles.photo}
-            />
-          </View> */}
-          <Photo photo={emsMemberDetails['photo']} photoContainerStyle={{ marginTop: '10%' }} photoStyle={styles.photo}/>
+          <Photo
+            photo={emsMemberDetails["photo"]}
+            photoContainerStyle={{ marginTop: "10%" }}
+            photoStyle={styles.photo}
+          />
           <View
             style={{
               ...styles.waitingTextContainer,
@@ -235,10 +245,17 @@ const GenerateRequestScreen = () => {
             <Text style={styles.waitingText2}>On Their Way!</Text>
           </View>
           <View style={styles.infoTextContainer}>
-            <Text style={styles.infoText}>Name: {emsMemberDetails['name']}</Text>
+            <Text style={styles.infoText}>
+              Name: {emsMemberDetails["name"]}
+            </Text>
             <View style={styles.phoneContainer}>
-              <Text style={styles.infoText}>Phone: {emsMemberDetails['phone']}</Text>
-              <TouchableOpacity style={styles.callButton} onPress={() => makeCall(emsMemberDetails['phone'])}>
+              <Text style={styles.infoText}>
+                Phone: {emsMemberDetails["phone"]}
+              </Text>
+              <TouchableOpacity
+                style={styles.callButton}
+                onPress={() => makeCall(emsMemberDetails["phone"])}
+              >
                 <Text style={styles.callButtonText}>Call</Text>
               </TouchableOpacity>
             </View>
@@ -256,44 +273,31 @@ const GenerateRequestScreen = () => {
     }
   }
 
-  return (
-    // <View style={styles.container}>
-    //   <View style={styles.mapContainer}>{Map}</View>
-    //   <View style={styles.buttonContainer}>
-    //     <TouchableOpacity style={styles.button}>
-    //       <Text style={styles.text}>Next</Text>
-    //     </TouchableOpacity>
-    //   </View>
-    // </View>
-    <View style={{ flex: 1 }}>{content}</View>
-    // {content}
-  );
+  return <View style={{ flex: 1 }}>{content}</View>;
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    // justifyContent: "center",
     backgroundColor: Colors.tertiary,
   },
   mapContainer: {
     marginTop: heightPercentageToDP("5%"),
     borderRadius: widthPercentageToDP("7%"),
     width: widthPercentageToDP("90%"),
-    height: '70%',//heightPercentageToDP("60%"),
+    height: "70%",
     elevation: 2,
     overflow: "hidden",
     backgroundColor: Colors.tertiary,
   },
   map: {
-    width: '100%',//,widthPercentageToDP("90%"),
-    height: '100%',//heightPercentageToDP("60%"),
+    width: "100%",
+    height: "100%",
     borderRadius: widthPercentageToDP("7%"),
   },
   buttonContainer: {
-    // position: "absolute",
-    marginTop: '10%',//heightPercentageToDP("80%"),
+    marginTop: "10%",
   },
   button: {
     width: widthPercentageToDP("70%"),
@@ -312,11 +316,10 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: widthPercentageToDP("90%"),
-    height: '65%',//heightPercentageToDP("60%"),
+    height: "65%",
     backgroundColor: Colors.tertiary,
     borderRadius: widthPercentageToDP("7%"),
     elevation: 4,
-    // justifyContent: "center",
     paddingVertical: heightPercentageToDP("2%"),
     paddingHorizontal: heightPercentageToDP("3%"),
     marginTop: heightPercentageToDP("5%"),
@@ -325,8 +328,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: heightPercentageToDP("5%"),
     marginBottom: heightPercentageToDP("2%"),
-    // position: "absolute",
-    // marginTop: heightPercentageToDP("80%"),
   },
   gobackText: {
     fontFamily: "Helvetica",
@@ -354,8 +355,8 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: Colors.tertiary,
     overflow: "hidden",
-    borderWidth: widthPercentageToDP('1%'),
-    borderColor: Colors.tertiary
+    borderWidth: widthPercentageToDP("1%"),
+    borderColor: Colors.tertiary,
   },
   photo: {
     width: widthPercentageToDP("40%"),
@@ -368,7 +369,6 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP("70%"),
     height: heightPercentageToDP("15%"),
     backgroundColor: Colors.tertiary,
-    // alignItems: 'center',
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("5%"),
     justifyContent: "space-evenly",
@@ -398,13 +398,11 @@ const styles = StyleSheet.create({
     color: Colors.secondary,
   },
   endButtonContainer: {
-    // position: "absolute",
     width: widthPercentageToDP("100%"),
     height: heightPercentageToDP("6%"),
-    marginTop: '5%'
+    marginTop: "5%",
   },
   endButton: {
-    // position: 'absolute',
     width: widthPercentageToDP("25%"),
     height: heightPercentageToDP("6%"),
     backgroundColor: Colors.primary,
@@ -412,7 +410,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: widthPercentageToDP("5%"),
-    // marginTop: '5%',//heightPercentageToDP("82%"),
     marginLeft: widthPercentageToDP("70%"),
   },
   endButtonText: {
