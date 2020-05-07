@@ -18,7 +18,8 @@ import Photo from "../components/Photo";
 import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
 import { auth, db, firebase } from '../components/ApiInfo';
-import { getCurrentUser, getTime, photoUrlRetriver, removeRequestFromServicing } from '../components/dbComm';
+import { getCurrentUser, getTime, photoUrlRetriver, removeRequestFromServicing, pushNotificaionRequester } from '../components/dbComm';
+import { registerForPushNotificationsAsync } from '../components/PushNotification';
 
 const AcceptRequestScreen = () => {
   const [currentRequests, setCurrentRequests] = useState([]);
@@ -49,6 +50,12 @@ const AcceptRequestScreen = () => {
     db.collection('servicing requests').add(requesterAndMemberDetails);
     db.collection('history').add(requesterAndMemberDetails);
     console.log("Success: The Request Is Moved To 'Servicing Requests'");
+    try {
+      pushNotificaionRequester(requestSelected['email'])
+      console.log("Success: push notificaion sent to Requester")
+    } catch (error) {
+      console.log("Update: token for requester not in database")
+    }
 
   }
 
@@ -97,6 +104,9 @@ const AcceptRequestScreen = () => {
   }
 
   const [listener, setListener] = useState(() => { requestListener() });
+  const [componentDidMount, setComponentDidMount] = useState( () => {
+    registerForPushNotificationsAsync();
+  });
 
 
   if (!isRequestAccepted) {

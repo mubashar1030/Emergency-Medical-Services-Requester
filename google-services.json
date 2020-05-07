@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1048117696578",
+    "firebase_url": "https://emsr-firebase.firebaseio.com",
+    "project_id": "emsr-firebase",
+    "storage_bucket": "emsr-firebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048117696578:android:46e75d73d1fc1c7a5f35db",
+        "android_client_info": {
+          "package_name": "com.LUMS.EMSR"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1048117696578-htulgkt2aj9634h4rlupv123gk9j5f5e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWM9O9BuJa1A6Js2v1SmOSn1fmXD_1I2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1048117696578-htulgkt2aj9634h4rlupv123gk9j5f5e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
