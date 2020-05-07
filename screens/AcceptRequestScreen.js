@@ -17,10 +17,18 @@ import MyButton from "../components/MyButton";
 import Photo from "../components/Photo";
 import call from "react-native-phone-call";
 import InfoText from "../components/InfoText";
-import { auth, db, firebase } from '../components/ApiInfo';
-import { getCurrentUser, getTime, photoUrlRetriver, removeRequestFromServicing, pushNotificaionRequester } from '../components/dbComm';
-import { registerForPushNotificationsAsync } from '../components/PushNotification';
+import { auth, db, firebase } from "../components/ApiInfo";
+import {
+  getCurrentUser,
+  getTime,
+  photoUrlRetriver,
+  removeRequestFromServicing,
+  pushNotificaionRequester,
+} from "../components/dbComm";
+import { registerForPushNotificationsAsync } from "../components/PushNotification";
 
+// This screen is only available to EMS Members. Through this screen
+// the requester can accept requests and view request information.
 const AcceptRequestScreen = () => {
   const [currentRequests, setCurrentRequests] = useState([]);
   const [isRequestAccepted, setIsRequestAccepted] = useState(false);
@@ -29,12 +37,11 @@ const AcceptRequestScreen = () => {
   const [requestSelected, setRequestSelected] = useState(null);
   let content;
 
-
-
-
-
+  // This function updates the requester once his request has be accepted.
   const updateRequester = () => {
-    var ref = db.collection('pending requests').where('email', '==', requestSelected['email']);
+    var ref = db
+      .collection("pending requests")
+      .where("email", "==", requestSelected["email"]);
     ref.get().then(function (querySnapshot) {
       querySnapshot.forEach(function (doc) {
         doc.ref.delete();
@@ -42,75 +49,83 @@ const AcceptRequestScreen = () => {
     });
     let memberDetails = getCurrentUser();
     let requesterAndMemberDetails = requestSelected;
-    requesterAndMemberDetails['EMS Member Name'] = memberDetails['name'];
-    requesterAndMemberDetails['EMS Member Email'] = memberDetails['email'];
-    requesterAndMemberDetails['EMS Member Phone'] = memberDetails['phone'];
-    requesterAndMemberDetails['EMS Member Photo'] = { uri: photoUrlRetriver() };
-    requesterAndMemberDetails['dateTime Accepted'] = getTime();
-    db.collection('servicing requests').add(requesterAndMemberDetails);
-    db.collection('history').add(requesterAndMemberDetails);
+    requesterAndMemberDetails["EMS Member Name"] = memberDetails["name"];
+    requesterAndMemberDetails["EMS Member Email"] = memberDetails["email"];
+    requesterAndMemberDetails["EMS Member Phone"] = memberDetails["phone"];
+    requesterAndMemberDetails["EMS Member Photo"] = { uri: photoUrlRetriver() };
+    requesterAndMemberDetails["dateTime Accepted"] = getTime();
+    db.collection("servicing requests").add(requesterAndMemberDetails);
+    db.collection("history").add(requesterAndMemberDetails);
     console.log("Success: The Request Is Moved To 'Servicing Requests'");
     try {
-      pushNotificaionRequester(requestSelected['email'])
-      console.log("Success: push notificaion sent to Requester")
+      pushNotificaionRequester(requestSelected["email"]);
+      console.log("Success: push notificaion sent to Requester");
     } catch (error) {
-      console.log("Update: token for requester not in database")
+      console.log("Update: token for requester not in database");
     }
+  };
 
-  }
-
+  // This function listens if the requester has ended the request.
   const requestEndListener = () => {
-    let observer = db.collection('servicing requests')
-      .onSnapshot(querySnapshot => {
-        querySnapshot.docChanges().forEach(change => {
-          if (change.type === 'removed') {
-            // console.log('Removed Request: ', change.doc.data());
+    let observer = db
+      .collection("servicing requests")
+      .onSnapshot((querySnapshot) => {
+        querySnapshot.docChanges().forEach((change) => {
+          if (change.type === "removed") {
             let item = change.doc.data();
-            if (item['EMS Member Email'] == auth.currentUser.email) {
+            if (item["EMS Member Email"] == auth.currentUser.email) {
               setIsRequestAccepted(false);
               return;
             }
           }
         });
       });
-  }
+  };
 
+  // This function listens for changes request list.
   const requestListener = () => {
-    let observer = db.collection('pending requests')
-      .onSnapshot(querySnapshot => {
-        querySnapshot.docChanges().forEach(change => {
-          if (change.type === 'added') {
-            console.log("Update: New Request Detected")
-            setCurrentRequests(previousRequests => [...previousRequests, change.doc.data()]);
+    let observer = db
+      .collection("pending requests")
+      .onSnapshot((querySnapshot) => {
+        querySnapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            console.log("Update: New Request Detected");
+            setCurrentRequests((previousRequests) => [
+              ...previousRequests,
+              change.doc.data(),
+            ]);
           }
-          if (change.type === 'modified') {
-            console.log('Modified Request: ', change.doc.data());
+          if (change.type === "modified") {
+            console.log("Modified Request: ", change.doc.data());
           }
-          if (change.type === 'removed') {
-            console.log("Update: A request was removed")
+          if (change.type === "removed") {
+            console.log("Update: A request was removed");
             let item = change.doc.data();
             let requestLst = currentRequests;
             for (var i = 0; i < currentRequests.length; i++) {
-              if (requestLst[i]['email'] == item['email']) {
+              if (requestLst[i]["email"] == item["email"]) {
                 requestLst.splice(i, 1);
                 break;
               }
             }
             setCurrentRequests(requestLst);
           }
-
         });
       });
-  }
+  };
 
-  const [listener, setListener] = useState(() => { requestListener() });
-  const [componentDidMount, setComponentDidMount] = useState( () => {
+  const [listener, setListener] = useState(() => {
+    requestListener();
+  });
+  const [componentDidMount, setComponentDidMount] = useState(() => {
     registerForPushNotificationsAsync();
   });
 
-
+  // The content of the screen varies as the EMS member performs
+  // different operations available to him. The below conditions makes sure of it.
   if (!isRequestAccepted) {
     if (currentRequests.length === 0) {
+      // the content for when there are no requests
       content = (
         <View style={styles.container}>
           <View style={styles.textContainer}>
@@ -119,12 +134,11 @@ const AcceptRequestScreen = () => {
           </View>
         </View>
       );
-
     } else {
       if (!isRequestSelected) {
+        // the content for when viewing the list of all current requests
         content = (
           <View style={styles.container}>
-            {/* <Text>aaa</Text> */}
             <View style={styles.titleContainer}>
               <Text style={styles.title}>Requests</Text>
             </View>
@@ -161,9 +175,10 @@ const AcceptRequestScreen = () => {
           </View>
         );
       } else {
+        // the content for when a request is selected to be viewed in more detail
         const region = {
-          latitude: requestSelected.latitude, //31.5770699,//31.47,
-          longitude: requestSelected.longitude, //74.3751424,//74.4111,
+          latitude: requestSelected.latitude,
+          longitude: requestSelected.longitude,
           latitudeDelta: 0.002,
           longitudeDelta: 0.0006,
         };
@@ -172,7 +187,7 @@ const AcceptRequestScreen = () => {
             <View
               style={{
                 ...styles.textContainer,
-                marginTop: "2%", //heightPercentageToDP("3%"),
+                marginTop: "2%",
               }}
             >
               <Text style={styles.upperText}>Someone is</Text>
@@ -239,8 +254,9 @@ const AcceptRequestScreen = () => {
     }
   } else {
     const region = {
-      latitude: requestAccepted.latitude, //31.5770699,//31.47,
-      longitude: requestAccepted.longitude, //74.3751424,//74.4111,
+      // the content for the details of accepted request
+      latitude: requestAccepted.latitude,
+      longitude: requestAccepted.longitude,
       latitudeDelta: 0.002,
       longitudeDelta: 0.0006,
     };
@@ -249,7 +265,7 @@ const AcceptRequestScreen = () => {
         <View
           style={{
             ...styles.textContainer,
-            marginTop: heightPercentageToDP("3%"),
+            marginTop: "2%",
           }}
         >
           <Text style={styles.lowerText}>Request Details</Text>
@@ -313,7 +329,7 @@ const AcceptRequestScreen = () => {
             <ScrollView
               style={{
                 ...styles.emergencyDetails,
-                height: heightPercentageToDP("17%"),
+                height: "30%",
               }}
             >
               <Text
@@ -338,8 +354,8 @@ const AcceptRequestScreen = () => {
             textStyle={{ fontSize: widthPercentageToDP("5%") }}
             onPress={() => {
               setIsRequestAccepted(false);
-              removeRequestFromServicing('EMS Member Email');
-              console.log("Update: EMS Member Ended Request")
+              removeRequestFromServicing("EMS Member Email");
+              console.log("Update: EMS Member Ended Request");
             }}
           />
         </View>
@@ -366,7 +382,7 @@ const AcceptRequestScreen = () => {
     };
     call(args).catch(console.error);
   };
-  
+
   return <View style={{ flex: 1 }}>{content}</View>;
 };
 
@@ -374,7 +390,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    // justifyContent: "center",
     backgroundColor: Colors.tertiary,
   },
   titleContainer: {
@@ -421,12 +436,10 @@ const styles = StyleSheet.create({
   photo: {
     width: widthPercentageToDP("20%"),
     height: widthPercentageToDP("20%"),
-    // backgroundColor: 'red'
   },
   photo2: {
     width: widthPercentageToDP("20%"),
     height: widthPercentageToDP("20%"),
-    // backgroundColor: 'red'
   },
   infoContainer: {
     width: "80%",
@@ -446,8 +459,7 @@ const styles = StyleSheet.create({
   },
   selectedRequestInfoContainer: {
     width: widthPercentageToDP("90%"),
-    height: heightPercentageToDP("30%"),
-    // backgroundColor: 'red',
+    height: "30%",
     marginTop: heightPercentageToDP("3%"),
     paddingHorizontal: widthPercentageToDP("5%"),
   },
@@ -456,7 +468,6 @@ const styles = StyleSheet.create({
     fontSize: widthPercentageToDP("5%"),
     color: Colors.secondary,
     fontWeight: "bold",
-    // width: widthPercentageToDP("16%"),
   },
   infoText: {
     fontFamily: "Helvetica",
@@ -467,8 +478,7 @@ const styles = StyleSheet.create({
   emergencyDetails: {
     paddingHorizontal: widthPercentageToDP("2%"),
     width: widthPercentageToDP("80%"),
-    height: heightPercentageToDP("20%"),
-    // backgroundColor: 'blue',
+    height: "50%",
     overflow: "scroll",
   },
   buttonContainer: {
@@ -479,7 +489,7 @@ const styles = StyleSheet.create({
   },
   acceptedRequestInfoContainer: {
     width: widthPercentageToDP("90%"),
-    height: heightPercentageToDP("40%"),
+    height: "42%",
     backgroundColor: Colors.tertiary,
     marginTop: heightPercentageToDP("3%"),
     borderRadius: widthPercentageToDP("10%"),
