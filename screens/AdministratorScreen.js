@@ -26,7 +26,7 @@ const AdministratorScreen = ({ route, navigation }) => {
               <Entypo
                 name="list"
                 size={widthPercentageToDP("10%")}
-                color={Colors.primary}
+                color={Colors.secondary}
               />
             );
           } else if (route.name === "Settings") {
